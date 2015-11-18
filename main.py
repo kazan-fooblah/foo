@@ -70,7 +70,7 @@ class UI(FloatLayout):#the app ui
         except Exception as e:
             self.lblAcce.text = "start_second_thread: %s" % e
 
-    def second_tread(self):
+    def second_thread(self):
         while True:
             if self.stop.is_set():
                 return
