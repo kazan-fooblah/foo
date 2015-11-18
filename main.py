@@ -6,10 +6,6 @@ from kivy.uix.label import Label
 from plyer import accelerometer
 from kivy.clock import Clock, mainthread
 
-import socket
-import struct
-import threading
-
 from connection import Connection
 
 
@@ -48,8 +44,8 @@ class Accelerometer(App):
     def build(self):
         ui = UI()
 
-        connection.configure_with(delegate=ui)
-        connection.start()
+        self.connection.configure_with(delegate=ui)
+        self.connection.start()
 
         return ui
 

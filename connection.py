@@ -1,12 +1,16 @@
+import socket
+import struct
 import threading
+
 from kivy.clock import Clock, mainthread
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5670
 
-class Connection():
+class Connection:
 
     stop = threading.Event()
+    sock = None
 
     def __init__(self):
         self._delegate = None
@@ -25,10 +29,10 @@ class Connection():
 
         self.start_second_thread()
 
-    def send(self, str):
+    def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(str, (MCAST_GRP, MCAST_PORT))
+        sock.sendto(message, (MCAST_GRP, MCAST_PORT))
         sock.close()
 
     @mainthread
@@ -39,7 +43,7 @@ class Connection():
         try:
             threading.Thread(target=self.second_thread).start()
         except Exception as e:
-            self.lblAcce.text = "start_second_thread: %s" % e
+            self._delegate.update_from_socket("start_second_thread: %s" % e)
 
     def second_thread(self):
         while True:
