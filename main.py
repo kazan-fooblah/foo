@@ -24,8 +24,8 @@ class UI(FloatLayout):#the app ui
 
     def __init__(self, **kwargs):
         super(UI, self).__init__(**kwargs)
-        # self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
-        self.lblSocket = Label(text="", valign="bottom")
+        self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
+        # self.lblSocket = Label(text="", valign="bottom")
         self.add_widget(self.lblAcce) #add the label at the screen
 
         try:
@@ -40,10 +40,10 @@ class UI(FloatLayout):#the app ui
 
             accelerometer.enable() # enable the accelerometer
             # if you want do disable it, just run: accelerometer.disable()
-            # Clock.schedule_interval(self.update, 1.0/24) # 24 calls per second
+            Clock.schedule_interval(self.update, 1.0/24) # 24 calls per second
 
         except Exception as e:
-            self.lblSocket.text = "Failed to start accelerometer %s" %e #error
+            self.lblAcce.text = "Failed to start accelerometer %s" %e #error
 
     def update(self, dt):
         txt = ""
@@ -55,24 +55,24 @@ class UI(FloatLayout):#the app ui
         # str(self.sock.recv(10240))
 
         except Exception as e:
-            txt = "Cannot read accelerometer! %s" % e #error
+            txt = "Cannot read accelerometer! " % e #error
         # self.lblAcce.text = txt  # add the correct text
 
     @mainthread
     def update2(self, txt):
-        self.lblSocket.text = txt
+        self.lblAcce.text = "Recieved: " + txt
 
     def start_second_thread(self):
         try:
             threading.Thread(target=self.second_thread).start()
         except Exception as e:
-            self.lblSocket.text = "start_second_thread: %s" % e
+            self.lblAcce.text = "start_second_thread: %s" % e
 
     def second_tread(self):
         while True:
             if self.stop.is_set():
                 return
-            msg = self.sock.recv(10240)
+            msg = str(self.sock.recv(10240))
             self.update2(msg)
 
 class Accelerometer(App): #our app
