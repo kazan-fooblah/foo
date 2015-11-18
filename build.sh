@@ -49,3 +49,4 @@ ssh -tt -o 'IdentitiesOnly yes' -i $PRIVATE_KEY -p$SSH_PORT "${SSH_USER}@${SSH_H
 ENDSSH
 
 scp -o 'IdentitiesOnly yes' -i $PRIVATE_KEY -p$SSH_PORT "${SSH_USER}@${SSH_HOST}:/home/ubuntu/removeme/foo/bin/MyApplication-1.0-debug.apk" ~/Downloads
+adb install ~/Downloads/MyApplication-1.0-debug.apk
