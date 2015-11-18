@@ -12,7 +12,7 @@ import struct
 # from kivy.factory import Factory
 # from kivy.animation import Animation
 # from kivy.uix.gridlayout import GridLayout
-# import threading
+import threading
 # import time
 
 MCAST_GRP = '224.0.0.1'
@@ -22,6 +22,7 @@ class UI(FloatLayout):#the app ui
     def __init__(self, **kwargs):
         super(UI, self).__init__(**kwargs)
         self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
+        self.lblSocket = Label(text="", valign="bottom")
         self.add_widget(self.lblAcce) #add the label at the screen
 
         try:
@@ -41,11 +42,10 @@ class UI(FloatLayout):#the app ui
         except Exception as e:
             self.lblAcce.text = "Failed to start accelerometer %s" %e #error
 
-    # @mainthread
     def update(self, dt):
         txt = ""
         try:
-            txt = "Accelerometer:\nX = %.2f\nY = %.2f\nZ = %2.f \nRecievied: " % (
+            txt = "Accelerometer:\nX = %.2f\nY = %.2f\nZ = %2.f" % (
                 accelerometer.acceleration[0],  # read the X value
                 accelerometer.acceleration[1],  # Y
                 accelerometer.acceleration[2])  # Z
@@ -55,10 +55,17 @@ class UI(FloatLayout):#the app ui
             txt = "Cannot read accelerometer! " % e #error
         self.lblAcce.text = txt  # add the correct text
 
-    # def start_second_thread(self):
-    #     threading.Thread(target=self.second_thread).start()
+    @mainthread
+    def update2(self, txt):
+        self.lblSocket.text = txt
 
-    # def second_tread(self):
+    def start_second_thread(self):
+        threading.Thread(target=self.second_thread).start()
+
+    def second_tread(self):
+        while True:
+            msg = self.sock.recv(10240)
+            self.update2(msg)
 
 class Accelerometer(App): #our app
     def build(self):
