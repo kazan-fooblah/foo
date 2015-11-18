@@ -1,3 +1,4 @@
+__version__ = "1.0"
 from kivy.app import App #for the main app
 from kivy.uix.floatlayout import FloatLayout #the UI layout
 from kivy.uix.label import Label #a label to show information
