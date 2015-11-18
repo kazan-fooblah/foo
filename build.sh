@@ -42,8 +42,10 @@ echo "Open ssh connection"
 ssh -tt -o 'IdentitiesOnly yes' -i $PRIVATE_KEY -p$SSH_PORT "${SSH_USER}@${SSH_HOST}" 'bash -s' <<'ENDSSH'
 
   cd /home/ubuntu/removeme/foo/
+  git pull origin android-python
   buildozer -v android debug
 
+  exit
 ENDSSH
 
 scp -o 'IdentitiesOnly yes' -i $PRIVATE_KEY -p$SSH_PORT "${SSH_USER}@${SSH_HOST}:/home/ubuntu/removeme/foo/bin/MyApplication-1.0-debug.apk" ~/Downloads

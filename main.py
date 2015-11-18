@@ -24,20 +24,22 @@ class UI(FloatLayout):#the app ui
         self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
         self.add_widget(self.lblAcce) #add the label at the screen
 
-        self.sock = socket.socket(self.socket.AF_INET, self.socket.SOCK_DGRAM, self.socket.IPPROTO_UDP)
-        self.sock.setsockopt(self.socket.SOL_SOCKET, self.socket.SO_REUSEADDR, 1)
-        self.sock.bind(('', MCAST_PORT))  # use MCAST_GRP instead of '' to listen only
-                                     # to MCAST_GRP, not all groups on MCAST_PORT
-        mreq = struct.pack("4sl", self.socket.inet_aton(MCAST_GRP), self.socket.INADDR_ANY)
-
-        sock.setsockopt(self.socket.IPPROTO_IP, self.socket.IP_ADD_MEMBERSHIP, mreq)
-
         try:
+            self.sock = socket.socket(self.socket.AF_INET, self.socket.SOCK_DGRAM, self.socket.IPPROTO_UDP)
+            self.sock.setsockopt(self.socket.SOL_SOCKET, self.socket.SO_REUSEADDR, 1)
+            self.sock.bind(('', MCAST_PORT))  # use MCAST_GRP instead of '' to listen only
+                                         # to MCAST_GRP, not all groups on MCAST_PORT
+            mreq = struct.pack("4sl", self.socket.inet_aton(MCAST_GRP), self.socket.INADDR_ANY)
+
+            sock.setsockopt(self.socket.IPPROTO_IP, self.socket.IP_ADD_MEMBERSHIP, mreq)
+
+
             accelerometer.enable() # enable the accelerometer
             # if you want do disable it, just run: accelerometer.disable()
             Clock.schedule_interval(self.update, 1.0/24) # 24 calls per second
-        except:
-            self.lblAcce.text = "Failed to start accelerometer" #error
+
+        except Exception as e:
+            self.lblAcce.text = "Failed to start accelerometer %s" %e #error
 
     # @mainthread
     def update(self, dt):
