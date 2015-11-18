@@ -48,8 +48,8 @@ class UI(FloatLayout):#the app ui
             txt = "Accelerometer:\nX = %.2f\nY = %.2f\nZ = %2.f \nRecievied: %s" %(
                 accelerometer.acceleration[0],  # read the X value
                 accelerometer.acceleration[1],  # Y
-                accelerometer.acceleration[2],  # Z
-                str(self.sock.recv(10240)))
+                accelerometer.acceleration[2])  # Z
+        # str(self.sock.recv(10240))
 
         except:
             txt = "Cannot read accelerometer!" #error
