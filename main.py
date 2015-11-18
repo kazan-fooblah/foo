@@ -31,7 +31,7 @@ class UI(FloatLayout):#the app ui
                                          # to MCAST_GRP, not all groups on MCAST_PORT
             mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 
-            sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+            self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 
             accelerometer.enable() # enable the accelerometer
