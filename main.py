@@ -56,7 +56,7 @@ class UI(FloatLayout):#the app ui
 
         except Exception as e:
             txt = "Cannot read accelerometer! " % e #error
-        # self.lblAcce.text = txt  # add the correct text
+            self.lblAcce.text = txt  # add the correct text
 
     @mainthread
     def update2(self, txt):
@@ -72,7 +72,7 @@ class UI(FloatLayout):#the app ui
         while True:
             if self.stop.is_set():
                 return
-            msg = str(self.sock.recv(10240))
+            msg = str(self.sock.recv(255))
             self.update2(msg)
 
 class Accelerometer(App): #our app
