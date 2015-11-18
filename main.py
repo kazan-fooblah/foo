@@ -16,7 +16,7 @@ import threading
 # import time
 
 MCAST_GRP = '224.0.0.1'
-MCAST_PORT = 5007
+MCAST_PORT = 5670
 
 class UI(FloatLayout):#the app ui
 
