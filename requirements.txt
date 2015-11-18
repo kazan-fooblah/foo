@@ -1,1 +1,2 @@
 pyre==0.2
+crdt===0.0.1a0dev-r0
