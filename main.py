@@ -24,7 +24,7 @@ class UI(FloatLayout):#the app ui
 
     def __init__(self, **kwargs):
         super(UI, self).__init__(**kwargs)
-        self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
+        # self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
         self.lblSocket = Label(text="", valign="bottom")
         self.add_widget(self.lblAcce) #add the label at the screen
 
@@ -43,7 +43,7 @@ class UI(FloatLayout):#the app ui
             # Clock.schedule_interval(self.update, 1.0/24) # 24 calls per second
 
         except Exception as e:
-            self.lblAcce.text = "Failed to start accelerometer %s" %e #error
+            self.lblSocket.text = "Failed to start accelerometer %s" %e #error
 
     def update(self, dt):
         txt = ""
@@ -56,7 +56,7 @@ class UI(FloatLayout):#the app ui
 
         except Exception as e:
             txt = "Cannot read accelerometer! %s" % e #error
-        self.lblAcce.text = txt  # add the correct text
+        # self.lblAcce.text = txt  # add the correct text
 
     @mainthread
     def update2(self, txt):
