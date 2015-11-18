@@ -42,7 +42,7 @@ class UI(FloatLayout):#the app ui
             # if you want do disable it, just run: accelerometer.disable()
             Clock.schedule_interval(self.update, 1.0/24) # 24 calls per second
 
-            start_second_thread()
+            self.start_second_thread()
 
         except Exception as e:
             self.lblAcce.text = "Failed to start accelerometer %s" %e #error
