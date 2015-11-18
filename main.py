@@ -45,7 +45,7 @@ class UI(FloatLayout):#the app ui
     def update(self, dt):
         txt = ""
         try:
-            txt = "Accelerometer:\nX = %.2f\nY = %.2f\nZ = %2.f \nRecievied: %s" % (
+            txt = "Accelerometer:\nX = %.2f\nY = %.2f\nZ = %2.f \nRecievied: " % (
                 accelerometer.acceleration[0],  # read the X value
                 accelerometer.acceleration[1],  # Y
                 accelerometer.acceleration[2])  # Z
