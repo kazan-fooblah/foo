@@ -19,6 +19,9 @@ MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5007
 
 class UI(FloatLayout):#the app ui
+
+    stop = threading.Event()
+
     def __init__(self, **kwargs):
         super(UI, self).__init__(**kwargs)
         self.lblAcce = Label(text="Accelerometer: ") #create a label at the center
@@ -52,7 +55,7 @@ class UI(FloatLayout):#the app ui
         # str(self.sock.recv(10240))
 
         except Exception as e:
-            txt = "Cannot read accelerometer! " % e #error
+            txt = "Cannot read accelerometer! %s" % e #error
         self.lblAcce.text = txt  # add the correct text
 
     @mainthread
@@ -60,14 +63,25 @@ class UI(FloatLayout):#the app ui
         self.lblSocket.text = txt
 
     def start_second_thread(self):
-        threading.Thread(target=self.second_thread).start()
+        try:
+            threading.Thread(target=self.second_thread).start()
+        except Exception as e:
+            self.lblSocket.text = "start_second_thread: %s" % e
 
     def second_tread(self):
         while True:
+            if self.stop.is_set():
+                return
             msg = self.sock.recv(10240)
             self.update2(msg)
 
 class Accelerometer(App): #our app
+    def on_stop(self):
+        # The Kivy event loop is about to stop, set a stop signal;
+        # otherwise the app window will close, but the Python process will
+        # keep running until all secondary threads exit.
+        self.root.stop.set()
+
     def build(self):
         ui = UI()# create the UI
         return ui #show it
