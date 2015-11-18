@@ -25,13 +25,13 @@ class UI(FloatLayout):#the app ui
         self.add_widget(self.lblAcce) #add the label at the screen
 
         try:
-            self.sock = socket.socket(self.socket.AF_INET, self.socket.SOCK_DGRAM, self.socket.IPPROTO_UDP)
-            self.sock.setsockopt(self.socket.SOL_SOCKET, self.socket.SO_REUSEADDR, 1)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.sock.bind(('', MCAST_PORT))  # use MCAST_GRP instead of '' to listen only
                                          # to MCAST_GRP, not all groups on MCAST_PORT
-            mreq = struct.pack("4sl", self.socket.inet_aton(MCAST_GRP), self.socket.INADDR_ANY)
+            mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 
-            sock.setsockopt(self.socket.IPPROTO_IP, self.socket.IP_ADD_MEMBERSHIP, mreq)
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 
             accelerometer.enable() # enable the accelerometer
