@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import socket
 import struct
 import threading
@@ -22,7 +24,6 @@ class Connection:
     def configure_with(self, delegate, func):
         self._delegate = delegate
         self._callable = func
-        self._callable.broadcast = self.send_dumpable
 
     def start(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -33,13 +34,15 @@ class Connection:
 
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-        self._callable.attached()
+        self._callable.attach(self.send_dumpable)
 
         self.start_second_thread()
 
     def send_dumpable(self, dumpable):
         try:
-            self.send(json.dumps(dumpable))
+            string_message = json.dumps(dumpable)
+            print("„„„„„„„ Sending: " + string_message)
+            self.send(string_message)
         except:
             print "connection.send_dumpable: not dumpable"
 
