@@ -83,31 +83,24 @@ def node_main(e):
 #         return next_global_presence
 #     e.fold(global_presence, global_presence, set_presence)
 
-# class UI(FloatLayout):
+class UI(FloatLayout):
 
-#     r = NumericProperty(1.0)
+    r = NumericProperty(1.0)
 
-#     def __init__(self, **kwargs):
+    def __init__(self, **kwargs):
 
-#         # self.lblAcce = Label(text="")
-#         # self.add_widget(self.lblAcce)
-#         self.canvas = Canvas()
-#         with self.canvas:
-#             Color(1., 1., 0)
-#             Rectangle(size=(50, 50))
-#             # Color(self.r, 1, 1, 1)
-#             # self.line = Line(points=[100, 200, 200, 200], width = 2.0, close = True)
-#         # self.add_widget(self.canvas)
-#         # self.canvas.draw()
+        super(UI, self).__init__(**kwargs)
 
-#         super(UI, self).__init__(**kwargs)
+        self.lblAcce = Label(text=u'\u2588')
+        self.add_widget(self.lblAcce)
+
         
-#     def update(self, txt):
-#         pass
-#         # self.lblAcce.text = txt
+    def update(self, txt):
+        pass
+        # self.lblAcce.text = txt
 
-class UI(Widget):
-    pass
+# class UI(Widget):
+#     pass
 
 class MainApp(App):
 
