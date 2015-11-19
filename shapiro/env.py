@@ -144,13 +144,20 @@ class LWWDict(StateCRDT):
                     result[k] = self.pairs[k]
             return result
 
+    def get(self, name):
+        result = {}
+        for (k, ts) in self.A.iteritems():
+            if ts >= self.R.get(k, 0):
+                result[k] = self.pairs[k]
+        return result[name]
+
     def add(self, key, value):
         with self.busy:
             self.__add(key, value)
 
     def __add(self, key, value):
         #print("*************__add")
-        self.A[key] = [time()]
+        self.A[key] = time()
         self.pairs[key] = value
 
     def discard(self, key):
@@ -160,7 +167,7 @@ class LWWDict(StateCRDT):
     def __discard(self, key):
         #print("*************__discard")
         if key in self.A:
-            self.R[key] = (time(),)
+            self.R[key] = time()
             del self.pairs[key]
 
     def update(self, key, new_value):
@@ -188,7 +195,10 @@ class LWWDict(StateCRDT):
         with self.busy:
             pairs = {}
             for k, v in self.pairs.iteritems():
-                pairs[k] = v.payload
+                if hasattr(v, 'payload'):
+                    pairs[k] = v.payload
+                else:
+                    pairs[k] = v
             types = {k: to_typestring(v) for k, v in self.pairs.iteritems()}
             return {
                 u'A': self.A,
@@ -325,19 +335,21 @@ def fake_broadcast(x):
 
 
 def handle_interests(interests, my_variables, locals, globals):
-    interest_keys = set(interests.keys()) & set(my_variables.keys())
+    interest_keys = set(interests.keys()) | set(my_variables.keys())
     for interest in interest_keys:
-        sink_name, local_global_sink, handler, name = interests.get(interest)
-        if hasattr(handler, '__call__'):
-            sink_value = None
-            if local_global_sink == 'local':
-                sink_value = locals[sink_name]
-            else:
-                print(globals.payload)
-                print(globals.value)
-                sink_value = globals.value[sink_name]
-            print("^^^^^ Calling fold " + str(name) + " from " + str(interest) + " to sink " + str(sink_name))
-            handler(my_variables[interest], sink_value)
+        hhandlers = interests.get(interest, list())
+        for hh in hhandlers:
+            sink_name, local_global_sink, handler, name = hh
+            if hasattr(handler, '__call__'):
+                sink_crdt = None
+                if local_global_sink == 'local':
+                    sink_crdt = locals[sink_name]
+                else:
+                    print(globals.payload)
+                    print(globals.value)
+                    sink_crdt = globals.get(sink_name)
+                print("^^^^^ Calling fold " + str(name) + " from " + str(interest) + " to sink " + str(sink_name))
+                handler(my_variables[interest], sink_crdt)
 
 
 class Env(object):
@@ -383,14 +395,18 @@ class Env(object):
 
         if isinstance(source, Local):
             if isinstance(sink, Local):
-                self.local_interesting[source.name] = (sink.name, 'local', lambda src, snk: and_set_local(func(src, snk), sink.name), name)
+                self.local_interesting[source.name] = self.local_interesting.get(source.name, None) or []
+                self.local_interesting[source.name].append((sink.name, 'local', lambda src, snk: and_set_local(func(src, snk), sink.name), name))
             elif isinstance(sink, Global):
-                self.local_interesting[source.name] = (sink.name, 'global', lambda src, snk: and_set_and_broadcast(func(src, snk), sink.name), name)
+                self.local_interesting[source.name] = self.local_interesting.get(source.name, None) or []
+                self.local_interesting[source.name].append((sink.name, 'global', lambda src, snk: and_set_and_broadcast(func(src, snk), sink.name), name))
         elif isinstance(source, Global):
             if isinstance(sink, Local):
-                self.global_interesting[source.name] = (sink.name, 'local', lambda src, snk: and_set_local(func(src, snk), sink.name), name)
+                self.global_interesting[source.name] = self.global_interesting.get(source.name, None) or []
+                self.global_interesting[source.name].append((sink.name, 'local', lambda src, snk: and_set_local(func(src, snk), sink.name), name))
             elif isinstance(sink, Global):
-                self.global_interesting[source.name] = (sink.name, 'global', lambda src, snk: and_set_and_broadcast(func(src, snk), sink.name), name)
+                self.global_interesting[source.name] = self.global_interesting.get(source.name, None) or []
+                self.global_interesting[source.name].append((sink.name, 'global', lambda src, snk: and_set_and_broadcast(func(src, snk), sink.name), name))
 
     def clone(self):
         new = self.__class__()
@@ -422,5 +438,6 @@ class Handler(object):
         print("****** Got something fresh: " + str(new_global.payload))
         print("****** Got something fresh against: " + str(self.env.globals.payload))
         self.env.globals = LWWDict.merge(self.env.globals, new_global)
+        print("!!!!!!!!!")
         #Thread(target=handle_interests, args=[self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals]).start()
         handle_interests(self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals)
