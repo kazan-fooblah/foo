@@ -98,7 +98,7 @@ class MainApp(App):
 
         print "fooblah main build setflag"
 
-        self.android_setflag()
+        # self.android_setflag()
 
         return ui
 
