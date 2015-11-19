@@ -32,13 +32,13 @@ class Accelerometer:
 
     def start_second_thread(self):
         try:
-            threading.Thread(target=self.second_thread).start()
+            threading.Thread(target=self.second_thread_lol, name="Little Sparrow").start()
             names = map(lambda x: x.name, threading.enumerate())
             self._delegate.update("\n".join(names))
         except Exception as e:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
-    def second_thread(self):
+    def second_thread_lol(self):
         try:
             while True:
                 if self.stop.is_set():
