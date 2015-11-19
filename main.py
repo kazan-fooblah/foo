@@ -26,6 +26,8 @@ class MainApp(App):
 
     def on_stop(self):
         self.connection.stop.set()
+        self.acc.stop.set()
+        self.another_acc.stop.set()
 
     def build(self):
         ui = UI()
