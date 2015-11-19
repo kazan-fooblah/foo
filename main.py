@@ -86,6 +86,7 @@ def node_main(e):
 class UI(FloatLayout):
 
     r = NumericProperty(1.0)
+    angle = NumericProperty(0)
 
     def __init__(self, **kwargs):
 
@@ -101,7 +102,8 @@ class UI(FloatLayout):
         # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        pass
+        self.angle = float(txt)
+        # pass
         # print "UI.update %s" % txt
         # self.lblAcce.text = txt
 
@@ -131,8 +133,8 @@ class MainApp(App):
 
         # return ui
 
-        # self.another_acc.configure_with(delegate=ui)
-        # self.another_acc.start()
+        self.another_acc.configure_with(delegate=ui)
+        self.another_acc.start()
 
         print "fooblah main build "
 
