@@ -8,6 +8,14 @@ from connection import Connection
 from accelerometer import Accelerometer
 from accelerometer_delegate import AccelerometerDelegate
 
+from jnius import autoclass
+PythonActivity = autoclass('org.renpy.android.PythonActivity')
+View = autoclass('android.view.View')
+Params = autoclass('android.view.WindowManager$LayoutParams')
+
+from android.runnable import run_on_ui_thread
+
+
 class UI(FloatLayout):
 
     def __init__(self, **kwargs):
@@ -24,13 +32,15 @@ class MainApp(App):
     acc = Accelerometer()
     another_acc = Accelerometer()
 
-    # def on_stop(self):
-    #     self.connection.stop.set()
-    #     self.acc.stop.set()
-    #     self.another_acc.stop.set()
+    def on_stop(self):
+        self.connection.stop.set()
+        self.acc.stop.set()
+        self.another_acc.stop.set()
 
     def build(self):
         ui = UI()
+
+        self.android_setflag()
 
         self.another_acc.configure_with(delegate=ui)
         self.another_acc.start()
@@ -45,6 +55,21 @@ class MainApp(App):
         self.acc.start()
 
         return ui
+
+    @run_on_ui_thread
+    def android_setflag(self):
+        PythonActivity.mActivity.getWindow().addFlags(Params.FLAG_KEEP_SCREEN_ON)
+
+    def setflag(self, *args):
+        self.android_setflag()
+
+    @run_on_ui_thread
+    def android_clearflag(self):
+        PythonActivity.mActivity.getWindow().clearFlags(Params.FLAG_KEEP_SCREEN_ON)
+
+    def clearflag(self, *args):
+        self.android_clearflag()
+
 
 if __name__ == '__main__':
     MainApp().run()
