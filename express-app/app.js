@@ -69,7 +69,6 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(app.router);
   app.use(express.static(__dirname + '/views/game/'));
 });
 
@@ -81,9 +80,7 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-var router = express.Router();
-
-router.post("/endpoint", function (req, res) {
+app.post("/endpoint", function (req, res) {
   res.status(200).send({status: 200});
   console.log(req.body);
   if (socket2 != null) socket2.emit('fuck you pidor', req.body);
