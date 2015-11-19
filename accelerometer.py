@@ -20,6 +20,7 @@ class Accelerometer:
 
     def update(self, dt):
         msg = Accelerometer.accelerometer_representation()
+        self._delegate.update("accelerometer.update")
         self._delegate.update(msg)
 
     @classmethod
