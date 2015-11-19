@@ -44,7 +44,7 @@ def node_main(e):
         new_one = env.LWWValue()
         new_one.set(1)
         next_global_presence.update(U, new_one)
-        # uiContainer.draw(next_global_presence.keys())
+        uiContainer.draw(next_global_presence.keys())
         return next_global_presence
     e.fold(global_presence, global_presence, set_presence)
 
@@ -98,9 +98,9 @@ class MainApp(App):
 
         print "fooblah main build setflag"
 
-        # self.android_setflag()
+        self.android_setflag()
 
-        return ui
+        # return ui
 
         # self.another_acc.configure_with(delegate=ui)
         # self.another_acc.start()
