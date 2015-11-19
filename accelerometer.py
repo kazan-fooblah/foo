@@ -51,5 +51,7 @@ class Accelerometer:
         y = float(accelerometer.acceleration[1] or 0)
         z = float(accelerometer.acceleration[2] or 0)
         # return math.arcsin(z / (pow(pow(z, 2) + pow(y, 2) + pow(x, 2)), 0.5))
+        if x == 0:
+            x = 0.0001
         return math.atan(y / x)
 

@@ -114,12 +114,12 @@ class MainApp(App):
 
     connection = Connection()
     # acc = Accelerometer()
-    # another_acc = Accelerometer()
+    another_acc = Accelerometer()
 
     def on_stop(self):
         self.connection.stop.set()
         # self.acc.stop.set()
-        # self.another_acc.stop.set()
+        self.another_acc.stop.set()
 
     def build(self):
         self.bind(on_start=self.post_build_init)
