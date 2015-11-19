@@ -14,7 +14,20 @@ View = autoclass('android.view.View')
 Params = autoclass('android.view.WindowManager$LayoutParams')
 
 from android.runnable import run_on_ui_thread
+from shapiro import env
+import uuid
 
+U = str(uuid.uuid4())
+
+def node_main(e):
+    global_presence = e.glob(env.LWWDict(), "global_presence")
+    def set_presence(prev, sink):
+        next_global_presence = prev.clone()
+        one = env.LWWValue()
+        one.set(1)
+        next_global_presence.update(U, one)
+        return next_global_presence
+    e.fold(global_presence, global_presence, set_presence)
 
 class UI(FloatLayout):
 
@@ -42,10 +55,12 @@ class MainApp(App):
 
         self.android_setflag()
 
+        h = env.Handler(node_main)
+
         self.another_acc.configure_with(delegate=ui)
         self.another_acc.start()
 
-        self.connection.configure_with(delegate=ui)
+        self.connection.configure_with(func=h)
         self.connection.start()
 
         acc_delegate = AccelerometerDelegate()

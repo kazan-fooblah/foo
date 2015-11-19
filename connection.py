@@ -17,9 +17,11 @@ class Connection:
     def __init__(self):
         self._delegate = None
         self._uuid = uuid.uuid4()
+        self._callable = None
 
-    def configure_with(self, delegate):
+    def configure_with(self, delegate, func):
         self._delegate = delegate
+        self._callable = func
 
     def start(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -29,6 +31,8 @@ class Connection:
         mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
+        h.attached()
 
         self.start_second_thread()
 
@@ -48,7 +52,10 @@ class Connection:
     @mainthread
     def recieved(self, txt):
         try:
-            self._delegate.update(txt)
+            if self._delegate is not None:
+                self._delegate.update(txt)
+            if self._callable is not None:
+                self._callable(json.loads(txt))
         except Exception as e:
             self._delegate.update("connection.recieved: %s" % e)
 
@@ -67,7 +74,7 @@ class Connection:
                 try:
                     message = json.loads(msg)
                     if "uuid" in message and message["uuid"] != str(self._uuid):
-                        self.recieved(msg)
+                        self.recieved(message["payload"])
                 except:
                     pass
         except Exception as e:
