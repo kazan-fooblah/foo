@@ -1,5 +1,8 @@
 __version__ = "1.0"
 
+import kivy
+kivy.require('1.0.9')
+
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
