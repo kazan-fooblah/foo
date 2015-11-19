@@ -236,7 +236,9 @@ class LWWDict(StateCRDT):
         additions = {}
         pairs = {}
         types = {}
-        keys = set(X.A) | set(Y.A)
+        keys = set(X.A.keys()) | set(Y.A.keys())
+        print("sdfsdfsdfasdfadsfsdaf")
+        print(keys)
         for key in keys:
             klass = X.pairs[key].__class__
             x_value = X.pairs.get(key, None)
