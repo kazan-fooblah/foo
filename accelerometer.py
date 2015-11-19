@@ -14,8 +14,11 @@ class Accelerometer:
     def start(self):
         self._delegate.update("lol")
         try:
+            self._delegate.update("lol2")
             accelerometer.enable()
+            self._delegate.update("lol3")
             Clock.schedule_interval(self.update, FREQUENCY)
+            self._delegate.update("lol4")
         except Exception as e:
             self._delegate.update("accelerometer.start: %s" % e)
 
