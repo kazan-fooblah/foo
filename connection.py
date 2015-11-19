@@ -33,14 +33,17 @@ class Connection:
         self.start_second_thread()
 
     def send(self, message):
-        m = {
-            "uuid": self._uuid,
-            "payload": message
-        }
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-        sock.sendto(json.dumps(m), (MCAST_GRP, MCAST_PORT))
-        sock.close()
+        try:
+            m = {
+                "uuid": self._uuid,
+                "payload": message
+            }
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+            sock.sendto(json.dumps(m), (MCAST_GRP, MCAST_PORT))
+            sock.close()
+        except:
+            self._delegate.update("connection.send: %s" % e)
 
     @mainthread
     def recieved(self, txt):
