@@ -9,21 +9,21 @@ from copy import deepcopy
 
 def to_typestring(element):
     if isinstance(element, LWWDict):
-        return 'lwwdict'
+        return u'lwwdict'
     elif isinstance(element, GCounter):
-        return 'gcounter'
+        return u'gcounter'
     elif isinstance(element, LWWValue):
-        return 'lwwvalue'
+        return u'lwwvalue'
     else:
         raise StandardError("SHP: TOS: Hey, I do not know what to do with element of class " + str(element.__class__))
 
 
 def from_typestring(typestring):
-    if typestring == 'gcounter':
+    if typestring == u'gcounter':
         return GCounter
-    elif typestring == 'lwwdict':
+    elif typestring == u'lwwdict':
         return LWWDict
-    elif typestring == 'lwwvalue':
+    elif typestring == u'lwwvalue':
         return LWWValue
     else:
         raise StandardError("SHP: SOT: Hey, I do not know what to do with typestring " + str(typestring))
@@ -115,13 +115,13 @@ class LWWValue(StateCRDT):
 
     def get_payload(self):
         return {
-            'A': self.A,
-            'v': self.v
+            u'A': self.A,
+            u'v': self.v
         }
 
     def set_payload(self, payload):
-        self.A = payload['A']
-        self.v = payload['v']
+        self.A = payload[u'A']
+        self.v = payload[u'v']
 
     payload = property(get_payload, set_payload)
 
@@ -191,19 +191,19 @@ class LWWDict(StateCRDT):
                 pairs[k] = v.payload
             types = {k: to_typestring(v) for k, v in self.pairs.iteritems()}
             return {
-                'A': self.A,
-                'R': self.R,
-                'pairs': pairs,
-                'types': types
+                u'A': self.A,
+                u'R': self.R,
+                u'pairs': pairs,
+                u'types': types
             }
 
     def set_payload(self, payload):
         with self.busy:
-            self.A = payload['A']
-            self.R = payload['R']
-            types = payload['types']
+            self.A = payload[u'A']
+            self.R = payload[u'R']
+            types = payload[u'types']
             self.pairs = {}
-            for k, v in payload['pairs'].iteritems():
+            for k, v in payload[u'pairs'].iteritems():
                 self.pairs[k] = from_typestring(types[k])().from_payload(v)
 
     payload = property(get_payload, set_payload)
@@ -213,10 +213,10 @@ class LWWDict(StateCRDT):
         additions, pairs, types = cls._merge_additions(X, Y)
         removals = cls._merge_removals(X, Y)
         payload = {
-            'A': additions,
-            'R': removals,
-            'pairs': {k: v.payload for k, v in pairs.iteritems()},
-            'types': types
+            u'A': additions,
+            u'R': removals,
+            u'pairs': {k: v.payload for k, v in pairs.iteritems()},
+            u'types': types
         }
         return cls.from_payload(payload)
 
