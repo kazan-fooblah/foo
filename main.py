@@ -100,6 +100,8 @@ class MainApp(App):
 
         self.android_setflag()
 
+        return ui
+
         # self.another_acc.configure_with(delegate=ui)
         # self.another_acc.start()
 
