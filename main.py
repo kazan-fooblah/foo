@@ -32,6 +32,9 @@ class MainApp(App):
     def build(self):
         ui = UI()
 
+        self.another_acc.configure_with(delegate=ui)
+        self.another_acc.start()
+
         self.connection.configure_with(delegate=ui)
         self.connection.start()
 
@@ -40,9 +43,6 @@ class MainApp(App):
 
         self.acc.configure_with(delegate=acc_delegate)
         self.acc.start()
-
-        self.another_acc.configure_with(delegate=ui)
-        self.another_acc.start()
 
         return ui
 

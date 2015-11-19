@@ -34,7 +34,7 @@ class Accelerometer:
         except Exception as e:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
-    def second_thread(self, arg):
+    def second_thread(self):
         try:
             while True:
                 if self.stop.is_set():
