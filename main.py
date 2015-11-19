@@ -21,6 +21,8 @@ class UI(FloatLayout):
 class MainApp(App):
 
     connection = Connection()
+    acc = Accelerometer()
+    another_acc = Accelerometer()
 
     def on_stop(self):
         self.connection.stop.set()
@@ -30,18 +32,15 @@ class MainApp(App):
 
         self.connection.configure_with(delegate=ui)
         self.connection.start()
-        # self.connection.send("little sparrow")
 
         acc_delegate = AccelerometerDelegate()
         acc_delegate.configure_with(connection=self.connection)
 
-        acc = Accelerometer()
-        acc.configure_with(delegate=acc_delegate)
-        acc.start()
+        self.acc.configure_with(delegate=acc_delegate)
+        self.acc.start()
 
-        another_acc = Accelerometer()
-        another_acc.configure_with(delegate=ui)
-        another_acc.start()
+        self.another_acc.configure_with(delegate=ui)
+        self.another_acc.start()
 
         return ui
 

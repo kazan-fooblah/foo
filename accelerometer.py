@@ -1,4 +1,5 @@
-# import threading
+import threading
+import time
 
 from plyer import accelerometer
 from kivy.clock import Clock, mainthread
@@ -6,6 +7,8 @@ from kivy.clock import Clock, mainthread
 # FREQUENCY = 1.0 / 24
 
 class Accelerometer:
+
+    stop = None
 
     def __init__(self):
         self._delegate = None
@@ -16,16 +19,33 @@ class Accelerometer:
     def start(self):
         try:
             accelerometer.enable()
-            Clock.schedule_interval(self.update, 1.0 / 24)
-            # self.start_second_thread()
+            # Clock.schedule_interval(self.update, 1.0 / 24)
+            self.start_second_thread()
         except Exception as e:
             self._delegate.update("accelerometer.start: %s" % e)
 
     @mainthread
-    def update(self, dt):
-        self._delegate.update("lol5")
-        msg = Accelerometer.accelerometer_representation()
+    def update(self, msg):
         self._delegate.update(msg)
+
+    def start_second_thread(self):
+        try:
+            threading.Thread(target=self.second_thread).start()
+        except Exception as e:
+            self._delegate.update("accelerometer.start_second_thread: %s" % e)
+
+   def second_thread(self):
+        try:
+            while True:
+                if self.stop.is_set():
+                    break
+                msg = Accelerometer.accelerometer_representation()
+                self.update(msg)
+                time.sleep(FREQUENCY)
+        except Exception as e:
+            self._delegate.update_from_socket("accelerometer.second_thread: %s" % e)
+        finally:
+            self.sock.close()
 
     @classmethod
     def accelerometer_representation(cls):
