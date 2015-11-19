@@ -42,7 +42,7 @@ class Connection:
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
             sock.sendto(json.dumps(m), (MCAST_GRP, MCAST_PORT))
             sock.close()
-        except:
+        except Exception as e:
             self._delegate.update("connection.send: %s" % e)
 
     @mainthread
