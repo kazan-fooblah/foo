@@ -37,31 +37,31 @@ def acc(e):
 
 
 
-# def main(e):
-#     def inc_sleep(source, sink):
-#         s = source.clone()
-#         s.increment()
-#         return s
-#
-#     global_sum = e.glob(env.GCounter(), 'global_sum')
-#     e.fold(global_sum, global_sum, inc_sleep)
+def main(e):
+    def inc_sleep(source, sink):
+        s = source.clone()
+        s.increment()
+        return s
+
+    global_sum = e.glob(env.GCounter(), 'global_sum')
+    e.fold(global_sum, global_sum, inc_sleep)
 
 
 def real():
     e = env.Env()
-    h = env.Handler(acc, env=e)
+    h = env.Handler(main, env=e)
     h.attached()
     print("MAN: " + str(e.globals.payload))
     h(e.globals.payload)
-    #next_e = e.clone()
-    #global_sum = next_e.globals['global_sum'].clone()
-    #global_sum.increment()
-    #print(global_sum.value)
-    #next_e.globals.update('global_sum', global_sum)
-    #h(next_e.globals.payload)
-    #h(next_e.globals.payload)
-    #h(next_e.globals.payload)
-    #print(next_e.globals['global_sum'].value)
+    next_e = e.clone()
+    global_sum = next_e.globals['global_sum'].clone()
+    global_sum.increment()
+    print(global_sum.value)
+    next_e.globals.update('global_sum', global_sum)
+    h(next_e.globals.payload)
+    h(next_e.globals.payload)
+    h(next_e.globals.payload)
+    print(next_e.globals['global_sum'].value)
 
 if __name__ == "__main__":
     real()
