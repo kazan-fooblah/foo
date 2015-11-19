@@ -38,15 +38,15 @@ class Connection:
     @mainthread
     def recieved(self, txt):
         try:
-            self._delegate.update_from_socket(txt)
+            self._delegate.update(txt)
         except Exception as e:
-            self._delegate.update_from_socket("recieved: %s" % e)
+            self._delegate.update("connection.recieved: %s" % e)
 
     def start_second_thread(self):
         try:
             threading.Thread(target=self.second_thread).start()
         except Exception as e:
-            self._delegate.update_from_socket("start_second_thread: %s" % e)
+            self._delegate.update("connection.start_second_thread: %s" % e)
 
     def second_thread(self):
         try:
@@ -56,6 +56,6 @@ class Connection:
                 msg = str(self.sock.recv(255))
                 self.recieved(msg)
         except Exception as e:
-            self._delegate.update_from_socket("second_thread: %s" % e)
+            self._delegate.update_from_socket("connection.second_thread: %s" % e)
         finally:
             self.sock.close()

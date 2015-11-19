@@ -3,36 +3,22 @@ __version__ = "1.0"
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from plyer import accelerometer
+
 from kivy.clock import Clock, mainthread
 
 from connection import Connection
-
+from accelerometer import Accelerometer
+from accelerometer_delegate import AccelerometerDelegate
 
 class UI(FloatLayout):
 
     def __init__(self, **kwargs):
         super(UI, self).__init__(**kwargs)
-        self.lblAcce = Label(text="Accelerometer: ")
+        self.lblAcce = Label(text="")
         self.add_widget(self.lblAcce)
 
-        try:
-            accelerometer.enable()
-            Clock.schedule_interval(self.update, 1.0/24)
-
-        except Exception as e:
-            self.lblAcce.text = "Failed to start accelerometer %s" %e
-
-    def update(self, dt):
-        txt = ""
-        try:
-            txt = "Accelerometer:\nX = %.2f\nY = %.2f\nZ = %2.f" % (accelerometer.acceleration[0], accelerometer.acceleration[1], accelerometer.acceleration[2])
-        except Exception as e:
-            txt = "Cannot read accelerometer! " % e 
-            self.lblAcce.text = txt
-
-    def update_from_socket(self, txt):
-        self.lblAcce.text = "Recieved: " + txt
+    def update(self, txt):
+        self.lblAcce.text = txt
 
 class Accelerometer(App):
 
@@ -46,6 +32,13 @@ class Accelerometer(App):
 
         self.connection.configure_with(delegate=ui)
         self.connection.start()
+
+        acc_delegate = AccelerometerDelegate()
+        acc_delegate.configure_with(connection=connection)
+
+        acc = Accelerometer()
+        acc.configure_with(delegate=acc_delegate)
+        acc.start()
 
         return ui
 
