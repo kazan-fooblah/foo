@@ -12,6 +12,7 @@ class Accelerometer:
         self._delegate = delegate
 
     def start(self):
+        self._delegate.update("lol")
         try:
             accelerometer.enable()
             Clock.schedule_interval(self.update, FREQUENCY)
