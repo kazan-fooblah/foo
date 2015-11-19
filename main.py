@@ -91,7 +91,7 @@ class UI(FloatLayout):
 
         super(UI, self).__init__(**kwargs)
 
-        self.lblAcce = Label(text=u'\u2588')
+        self.lblAcce = Label(text='oooooooooooooooooooooooooooo')
         self.add_widget(self.lblAcce)
 
         
