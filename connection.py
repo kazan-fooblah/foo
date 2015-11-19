@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import socket
 import struct
 import threading
@@ -42,7 +40,6 @@ class Connection:
     def send_dumpable(self, dumpable):
         try:
             string_message = json.dumps(dumpable)
-            print("„„„„„„„ Sending: " + string_message)
             self.send(string_message)
         except Exception as e:
             print "connection.send_dumpable: not dumpable: " + str(e)
