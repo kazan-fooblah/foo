@@ -60,7 +60,7 @@ class Connection:
             while True:
                 if self.stop.is_set():
                     break
-                msg = str(self.sock.recv(255))
+                msg = str(self.sock.recv(4096))
                 self.recieved(msg)
         except Exception as e:
             self._delegate.update_from_socket("connection.second_thread: %s" % e)
