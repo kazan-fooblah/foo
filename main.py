@@ -39,6 +39,10 @@ class MainApp(App):
         acc.configure_with(delegate=acc_delegate)
         acc.start()
 
+        another_acc = Accelerometer()
+        another_acc.configure_with(delegate=ui)
+        another_acc.start()
+
         return ui
 
 if __name__ == '__main__':
