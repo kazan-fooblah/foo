@@ -8,14 +8,20 @@ from connection import Connection
 from accelerometer import Accelerometer
 from accelerometer_delegate import AccelerometerDelegate
 
-from jnius import autoclass
+from shapiro import env
+import uuid
+
+from kivy.properties import BooleanProperty
+from kivy.utils import platform
+
+import android
+from jnius import autoclass, cast
+from android.runnable import run_on_ui_thread
+
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 View = autoclass('android.view.View')
 Params = autoclass('android.view.WindowManager$LayoutParams')
 
-from android.runnable import run_on_ui_thread
-from shapiro import env
-import uuid
 
 U = str(uuid.uuid4())
 
@@ -93,6 +99,8 @@ class MainApp(App):
         self.another_acc.stop.set()
 
     def build(self):
+        self.bind(on_start=self.post_build_init)
+
         print "fooblah main build start"
         ui = UI()
 
@@ -132,6 +140,17 @@ class MainApp(App):
 
     def setflag(self, *args):
         self.android_setflag()
+
+    def post_build_init(self, *args):
+        android.map_key(android.KEYCODE_BACK, 1000)
+        win = self._app_window
+        win.bind(on_keyboard=self._key_handler)
+
+    def _key_handler(self, *args):
+        key = args[1]
+        if key in (1000, 27):
+            self.stop()
+            return True
 
 
 if __name__ == '__main__':
