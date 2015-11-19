@@ -104,7 +104,7 @@ class UI(FloatLayout):
         # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        self.angle = float(txt) / math.pi * 180
+        self.angle = float(txt) / math.pi * 180 + 90
         # pass
         # print "UI.update %s" % txt
         # self.lblAcce.text = txt
@@ -115,12 +115,12 @@ class UI(FloatLayout):
 class MainApp(App):
 
     connection = Connection()
-    # acc = Accelerometer()
+    acc = Accelerometer()
     another_acc = Accelerometer()
 
     def on_stop(self):
         self.connection.stop.set()
-        # self.acc.stop.set()
+        self.acc.stop.set()
         self.another_acc.stop.set()
 
     def build(self):
@@ -151,11 +151,11 @@ class MainApp(App):
         self.connection.configure_with(delegate=None, func=h)
         self.connection.start()
 
-        # acc_delegate = AccelerometerDelegate()
-        # acc_delegate.configure_with(connection=self.connection)
-        #
-        # self.acc.configure_with(delegate=acc_delegate)
-        # self.acc.start()
+        acc_delegate = AccelerometerDelegate()
+        acc_delegate.configure_with(handler=h)
+
+        self.acc.configure_with(delegate=acc_delegate)
+        self.acc.start()
 
         return ui
 
