@@ -19,9 +19,6 @@ class Accelerometer:
     def start(self):
         try:
             accelerometer.enable()
-            # Clock.schedule_interval(self.update, 1.0 / 24)
-            # self._delegate.update("accelerometer.start_second_thread: %s")
-            # raise
             self.start_second_thread()
         except Exception as e:
             self._delegate.update("accelerometer.start: %s" % e)
@@ -36,7 +33,7 @@ class Accelerometer:
         except Exception as e:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
-    def second_thread_lol(self):
+    def second_thread(self):
         try:
             while True:
                 if self.stop.is_set():

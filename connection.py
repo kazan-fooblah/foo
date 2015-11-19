@@ -63,6 +63,6 @@ class Connection:
                 msg = str(self.sock.recv(4096))
                 self.recieved(msg)
         except Exception as e:
-            self._delegate.update_from_socket("connection.second_thread: %s" % e)
+            self._delegate.update("connection.second_thread: %s" % e)
         finally:
             self.sock.close()
