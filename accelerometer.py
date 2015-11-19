@@ -46,4 +46,5 @@ class Accelerometer:
 
     @staticmethod
     def accelerometer_representation():
-        return "X = %.2f Y = %.2f Z = %2.f" % (float(accelerometer.acceleration[0]), float(accelerometer.acceleration[1]), float(accelerometer.acceleration[2]))
+        return "X = %.2f Y = %.2f Z = %2.f" % (float(accelerometer.acceleration[0] or 0), float(accelerometer.acceleration[1] or 0), float(accelerometer.acceleration[2] or 0))
+
