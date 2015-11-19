@@ -107,8 +107,8 @@ class UI(FloatLayout):
         # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        angle = float(txt) / math.pi * 180 + 90
-        Animation(angle=angle).start(self)
+        self.angle = float(txt) / math.pi * 180 + 90
+        # Animation(angle=angle).start(self)
         # pass
         # print "UI.update %s" % txt
         # self.lblAcce.text = txt

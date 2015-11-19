@@ -5,7 +5,7 @@ import math
 from plyer import accelerometer
 from kivy.clock import Clock, mainthread
 
-FREQUENCY = 1.0 / 24
+FREQUENCY = 1.0 / 1
 
 class Accelerometer:
 
