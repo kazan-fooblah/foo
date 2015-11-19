@@ -60,6 +60,15 @@ def angle_main(e):
         return all_angles
     e.fold(angles, angles, send_all_angles, 'SEND_ON_ALL_ANGLES')
 
+    def send_all_angles(average_angle, all_angles_sink):
+        payload = {
+            'angles': e.globals.get(u'angles').values(),
+            'average_angle': e.globals.get(u'average_angle').value
+        }
+        post(payload)
+        return all_angles_sink
+    e.fold(average_angle, angles, send_all_angles, 'SEND_ON_AVERAGE_ANGLE')
+
 
 def real():
     connection = Connection()
