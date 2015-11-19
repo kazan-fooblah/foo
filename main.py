@@ -24,6 +24,8 @@ from android.runnable import run_on_ui_thread
 from kivy.graphics import Color, Line, Canvas, Rectangle
 from kivy.properties import NumericProperty
 
+import math
+
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 View = autoclass('android.view.View')
 Params = autoclass('android.view.WindowManager$LayoutParams')
@@ -93,7 +95,7 @@ class UI(FloatLayout):
         self.canvas = Canvas()
         with self.canvas:
             Color(1., 0, 0)
-            Rectangle(pos=(10, 10), size=(500, 500))
+            # Rectangle(pos=(10, 10), size=(500, 500))
 
         super(UI, self).__init__(**kwargs)
 
@@ -102,7 +104,7 @@ class UI(FloatLayout):
         # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        self.angle = float(txt)
+        self.angle = float(txt) / math.pi * 180 + 90
         # pass
         # print "UI.update %s" % txt
         # self.lblAcce.text = txt
@@ -113,13 +115,13 @@ class UI(FloatLayout):
 class MainApp(App):
 
     connection = Connection()
-    # acc = Accelerometer()
-    # another_acc = Accelerometer()
+    acc = Accelerometer()
+    another_acc = Accelerometer()
 
     def on_stop(self):
         self.connection.stop.set()
-        # self.acc.stop.set()
-        # self.another_acc.stop.set()
+        self.acc.stop.set()
+        self.another_acc.stop.set()
 
     def build(self):
         self.bind(on_start=self.post_build_init)
@@ -149,11 +151,11 @@ class MainApp(App):
         self.connection.configure_with(delegate=None, func=h)
         self.connection.start()
 
-        # acc_delegate = AccelerometerDelegate()
-        # acc_delegate.configure_with(connection=self.connection)
-        #
-        # self.acc.configure_with(delegate=acc_delegate)
-        # self.acc.start()
+        acc_delegate = AccelerometerDelegate()
+        acc_delegate.configure_with(handler=h)
+
+        self.acc.configure_with(delegate=acc_delegate)
+        self.acc.start()
 
         return ui
 
