@@ -91,10 +91,12 @@ class UI(FloatLayout):
 
         super(UI, self).__init__(**kwargs)
 
+        print "UI.__init__"
         self.lblAcce = Label(text='oooooooooooooooooooooooooooo')
         self.add_widget(self.lblAcce)
 
     def update(self, txt):
+        print "UI.update %s" % txt
         self.lblAcce.text = txt
 
 # class UI(Widget):
