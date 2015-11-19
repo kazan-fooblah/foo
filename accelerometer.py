@@ -4,7 +4,7 @@ import time
 from plyer import accelerometer
 from kivy.clock import Clock, mainthread
 
-# FREQUENCY = 1.0 / 24
+FREQUENCY = 1.0 / 24
 
 class Accelerometer:
 
@@ -34,7 +34,7 @@ class Accelerometer:
         except Exception as e:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
-   def second_thread(self):
+    def second_thread(self):
         try:
             while True:
                 if self.stop.is_set():
@@ -44,9 +44,7 @@ class Accelerometer:
                 time.sleep(FREQUENCY)
         except Exception as e:
             self._delegate.update_from_socket("accelerometer.second_thread: %s" % e)
-        finally:
-            self.sock.close()
 
-    @classmethod
-    def accelerometer_representation(cls):
+    @staticmethod
+    def accelerometer_representation():
         return "X = %.2f\nY = %.2f\nZ = %2.f" % (accelerometer.acceleration[0], accelerometer.acceleration[1], accelerometer.acceleration[2])
