@@ -6,7 +6,7 @@ import threading
 from connection import Connection
 import httplib, urllib
 
-U = str(uuid.uuid4())
+U = unicode(str(uuid.uuid4()))
 UI_HOST = 'localhost'
 UI_PORT = 3000
 UI_ENDPOINT = '/endpoint'

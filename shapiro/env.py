@@ -150,7 +150,7 @@ class LWWDict(StateCRDT):
 
     def __add(self, key, value):
         #print("*************__add")
-        self.A[key] = (time(),)
+        self.A[key] = [time()]
         self.pairs[key] = value
 
     def discard(self, key):
@@ -198,13 +198,12 @@ class LWWDict(StateCRDT):
             }
 
     def set_payload(self, payload):
-        with self.busy:
-            self.A = payload[u'A']
-            self.R = payload[u'R']
-            types = payload[u'types']
-            self.pairs = {}
-            for k, v in payload[u'pairs'].iteritems():
-                self.pairs[k] = from_typestring(types[k])().from_payload(v)
+        self.A = payload[u'A']
+        self.R = payload[u'R']
+        types = payload[u'types']
+        self.pairs = {}
+        for k, v in payload[u'pairs'].iteritems():
+            self.pairs[k] = from_typestring(types[k])().from_payload(v)
 
     payload = property(get_payload, set_payload)
 
@@ -218,6 +217,8 @@ class LWWDict(StateCRDT):
             u'pairs': {k: v.payload for k, v in pairs.iteritems()},
             u'types': types
         }
+        print("MERGED NEW PAYLOAD")
+        print(payload)
         return cls.from_payload(payload)
 
     def compare(self, other):
@@ -236,11 +237,12 @@ class LWWDict(StateCRDT):
         additions = {}
         pairs = {}
         types = {}
+        print("ADDITIONS X: " + str(X.A))
+        print("ADDITIONS Y: " + str(Y.A))
         keys = set(X.A.keys()) | set(Y.A.keys())
         print("sdfsdfsdfasdfadsfsdaf")
         print(keys)
-        for k in keys:
-            klass = X.pairs[k].__class__
+        for k in list(keys):
             x_value = X.pairs.get(k, None)
             y_value = Y.pairs.get(k, None)
             print("xvalue: " + str(x_value))
@@ -248,17 +250,21 @@ class LWWDict(StateCRDT):
             pairs[k] = None
             x_timestamp = X.A.get(k, 0)
             y_timestamp = Y.A.get(k, 0)
-            if x_value and y_value:
-                pairs[k] = klass.merge(x_value, y_value)
+            if (x_value is not None) and (y_value is not None):
+                print("X and Y")
+                pairs[k] = x_value.__class__.merge(x_value, y_value)
                 additions[k] = time()
-            elif x_value and y_value is None:
+                types[k] = to_typestring(pairs[k])
+            elif (x_value is not None) and y_value is None:
+                print("Just X")
                 pairs[k] = x_value
                 additions[k] = x_timestamp
-            elif x_value is None and y_value:
+                types[k] = to_typestring(pairs[k])
+            elif x_value is None and (y_value is not None):
+                print("Just Y")
                 pairs[k] = y_value
                 additions[k] = y_timestamp
-
-            types[k] = to_typestring(pairs[k])
+                types[k] = to_typestring(pairs[k])
         print(additions)
         print(pairs)
         print(types)
