@@ -1,5 +1,8 @@
 __version__ = "1.0"
 
+import kivy
+kivy.require('1.0.9')
+
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
@@ -18,7 +21,7 @@ import android
 from jnius import autoclass, cast
 from android.runnable import run_on_ui_thread
 
-from kivy.graphics import Color, Line, Canvas
+from kivy.graphics import Color, Line, Canvas, Rectangle
 from kivy.properties import NumericProperty
 
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
@@ -85,19 +88,17 @@ class UI(FloatLayout):
     r = NumericProperty(1.0)
 
     def __init__(self, **kwargs):
+
         super(UI, self).__init__(**kwargs)
-        # self.lblAcce = Label(text="")
-        # self.add_widget(self.lblAcce)
-        self.canvas = Canvas()
-        with self.canvas:
-            Color(self.r, 1, 1, 1)
-            self.line = Line(points=[100, 200, 200, 200], width = 2.0, close = True)
-        self.add_widget(self.canvas)
-        self.canvas.draw()
-        
+
+        self.lblAcce = Label(text='oooooooooooooooooooooooooooo')
+        self.add_widget(self.lblAcce)
+
     def update(self, txt):
-        pass
-        # self.lblAcce.text = txt
+        self.lblAcce.text = txt
+
+# class UI(Widget):
+#     pass
 
 class MainApp(App):
 
