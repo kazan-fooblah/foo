@@ -94,10 +94,8 @@ class UI(FloatLayout):
         self.lblAcce = Label(text='oooooooooooooooooooooooooooo')
         self.add_widget(self.lblAcce)
 
-        
     def update(self, txt):
-        pass
-        # self.lblAcce.text = txt
+        self.lblAcce.text = txt
 
 # class UI(Widget):
 #     pass
