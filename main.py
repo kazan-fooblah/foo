@@ -4,8 +4,6 @@ from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 
-from kivy.clock import Clock, mainthread
-
 from connection import Connection
 from accelerometer import Accelerometer
 from accelerometer_delegate import AccelerometerDelegate
@@ -20,7 +18,7 @@ class UI(FloatLayout):
     def update(self, txt):
         self.lblAcce.text = txt
 
-class Accelerometer(App):
+class MainApp(App):
 
     connection = Connection()
 
@@ -34,7 +32,7 @@ class Accelerometer(App):
         self.connection.start()
 
         acc_delegate = AccelerometerDelegate()
-        acc_delegate.configure_with(connection=connection)
+        acc_delegate.configure_with(connection=self.connection)
 
         acc = Accelerometer()
         acc.configure_with(delegate=acc_delegate)
@@ -43,4 +41,4 @@ class Accelerometer(App):
         return ui
 
 if __name__ == '__main__':
-    Accelerometer().run()
+    MainApp().run()
