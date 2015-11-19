@@ -37,16 +37,39 @@ uiContainer = UIContainer()
 
 def node_main(e):
     global_presence = e.glob(env.LWWDict(), "global_presence")
+    one = e.loc(env.LWWValue(), 'one')
 
     def set_presence(prev, sink):
         next_global_presence = prev.clone()
-        one = env.LWWValue()
-        one.set(1)
-        next_global_presence.update(U, one)
-        # UI < next_global_presence.keys()
+        new_one = env.LWWValue()
+        new_one.set(1)
+        next_global_presence.update(U, new_one)
         uiContainer.draw(next_global_presence.keys())
         return next_global_presence
     e.fold(global_presence, global_presence, set_presence)
+
+    def set_one(one_value, sink):
+        next_sink = sink.clone()
+        next_sink.update(U, one_value)
+        return next_sink
+    e.fold(one, global_presence, set_one)
+
+    next_one = one.clone()
+    next_one.set(1)
+    e.loc(next_one, 'one')
+
+# def node_main(e):
+#     global_presence = e.glob(env.LWWDict(), "global_presence")
+#
+#     def set_presence(prev, sink):
+#         next_global_presence = prev.clone()
+#         one = env.LWWValue()
+#         one.set(1)
+#         next_global_presence.update(U, one)
+#         # UI < next_global_presence.keys()
+#         uiContainer.draw(next_global_presence.keys())
+#         return next_global_presence
+#     e.fold(global_presence, global_presence, set_presence)
 
 class UI(FloatLayout):
 
@@ -74,12 +97,12 @@ class MainApp(App):
 
         self.android_setflag()
 
-        h = env.Handler(node_main)
-
         # self.another_acc.configure_with(delegate=ui)
         # self.another_acc.start()
 
         uiContainer.configure_with(ui)
+
+        h = env.Handler(node_main)
 
         self.connection.configure_with(func=h)
         self.connection.start()
