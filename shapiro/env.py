@@ -254,7 +254,9 @@ class LWWDict(StateCRDT):
                 pairs[key] = y_value
                 additions[key] = y_timestamp
             types[key] = to_typestring(pairs[key])
-
+        print(additions)
+        print(pairs)
+        print(types)
             #
             # if x_timestamp >= y_timestamp:
             #     value = X.pairs[key]
