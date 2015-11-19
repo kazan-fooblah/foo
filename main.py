@@ -92,6 +92,7 @@ class UI(FloatLayout):
         with self.canvas:
             Color(self.r, 1, 1, 1)
             self.line = Line(points=[100, 200, 200, 200], width = 2.0, close = True)
+        self.add_widget(self.canvas)
         
     def update(self, txt):
         pass
