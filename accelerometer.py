@@ -39,7 +39,6 @@ class Accelerometer:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
     def second_thread_lol(self):
-        raise Exception()
         try:
             while True:
                 if self.stop.is_set():
@@ -48,7 +47,7 @@ class Accelerometer:
                 self.update(msg)
                 time.sleep(FREQUENCY)
         except Exception as e:
-            self._delegate.update_from_socket("accelerometer.second_thread: %s" % e)
+            self.update("accelerometer.second_thread: %s" % e)
 
     @staticmethod
     def accelerometer_representation():
