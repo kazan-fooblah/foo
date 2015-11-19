@@ -115,7 +115,7 @@ class MainApp(App):
 
         print "fooblah main build connection"
 
-        self.connection.configure_with(func=h)
+        self.connection.configure_with(delegate=None, func=h)
         self.connection.start()
 
         # acc_delegate = AccelerometerDelegate()
