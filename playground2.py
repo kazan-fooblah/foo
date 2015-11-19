@@ -9,7 +9,7 @@ import json
 import random
 
 U = unicode(str(uuid.uuid4()))
-UI_HOST = 'localhost'
+UI_HOST = '192.168.43.183'
 UI_PORT = 3000
 UI_ENDPOINT = '/endpoint'
 
@@ -49,10 +49,22 @@ def angle_main(e):
         return avg_angle
     e.fold(angles, average_angle, calculate_average_angle, 'CALCULATE_AVERAGE_ANGLE')
 
+    def send_all_angles(all_angles, all_angles_sink):
+        payload = {
+            'angles': all_angles.values(),
+            'average_angle': e.globals.get(u'average_angle').value
+        }
+        post(payload)
+        return all_angles
+    e.fold(angles, angles, send_all_angles, 'SEND_ON_ALL_ANGLES')
+
     zero_angle = current_angle.q()
     zero_angle.set(random.random())
-    e.loc(zero_angle, 'current_angle')
+    e.loc(zero_angle, u'current_angle')
 
+#v = env.LWWValue()
+#v.set(3.33)
+#h.env.loc(v, u'current_angle')
 
 def node_main(e):
     global_presence = e.glob(env.LWWDict(), u"global_presence")
