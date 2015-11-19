@@ -44,7 +44,7 @@ def node_main(e):
         new_one = env.LWWValue()
         new_one.set(1)
         next_global_presence.update(U, new_one)
-        uiContainer.draw(next_global_presence.keys())
+        # uiContainer.draw(next_global_presence.keys())
         return next_global_presence
     e.fold(global_presence, global_presence, set_presence)
 
@@ -93,25 +93,34 @@ class MainApp(App):
         self.another_acc.stop.set()
 
     def build(self):
+        print "fooblah main build start"
         ui = UI()
+
+        print "fooblah main build setflag"
 
         self.android_setflag()
 
         # self.another_acc.configure_with(delegate=ui)
         # self.another_acc.start()
 
+        print "fooblah main build "
+
         uiContainer.configure_with(ui)
 
+        print "fooblah main build handler.init"
+
         h = env.Handler(node_main)
+
+        print "fooblah main build connection"
 
         self.connection.configure_with(func=h)
         self.connection.start()
 
-        acc_delegate = AccelerometerDelegate()
-        acc_delegate.configure_with(connection=self.connection)
-
-        self.acc.configure_with(delegate=acc_delegate)
-        self.acc.start()
+        # acc_delegate = AccelerometerDelegate()
+        # acc_delegate.configure_with(connection=self.connection)
+        #
+        # self.acc.configure_with(delegate=acc_delegate)
+        # self.acc.start()
 
         return ui
 
@@ -121,13 +130,6 @@ class MainApp(App):
 
     def setflag(self, *args):
         self.android_setflag()
-
-    @run_on_ui_thread
-    def android_clearflag(self):
-        PythonActivity.mActivity.getWindow().clearFlags(Params.FLAG_KEEP_SCREEN_ON)
-
-    def clearflag(self, *args):
-        self.android_clearflag()
 
 
 if __name__ == '__main__':
