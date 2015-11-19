@@ -11,6 +11,7 @@ UI_HOST = 'localhost'
 UI_PORT = 3000
 UI_ENDPOINT = '/endpoint'
 
+print("I am U: " + U)
 
 def post(data):
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
@@ -80,4 +81,4 @@ def real():
     connection.start()
 
 if __name__ == "__main__":
-    post(1)
+    real()
