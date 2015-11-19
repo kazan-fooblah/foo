@@ -1,7 +1,9 @@
-from plyer import accelerometer
-from kivy.clock import Clock
+# import threading
 
-FREQUENCY = 1.0 / 24
+from plyer import accelerometer
+from kivy.clock import Clock, mainthread
+
+# FREQUENCY = 1.0 / 24
 
 class Accelerometer:
 
@@ -15,9 +17,11 @@ class Accelerometer:
         try:
             accelerometer.enable()
             Clock.schedule_interval(self.update, 1.0 / 24)
+            # self.start_second_thread()
         except Exception as e:
             self._delegate.update("accelerometer.start: %s" % e)
 
+    @mainthread
     def update(self, dt):
         self._delegate.update("lol5")
         msg = Accelerometer.accelerometer_representation()
