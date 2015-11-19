@@ -16,17 +16,18 @@ window.averageAngle = 0;
 
 var socket = io.connect('http://localhost:3000');
 socket.on('fuck you pidor', function (nodeData) {
+  averageAngle = nodeData.average_angle || 0
   var newMeshUids = [];
-  for (var uid in nodeData) {
+  for (var uid in nodeData.angles) {
     var uidIndex = meshUids.indexOf(uid);
     if (uidIndex != -1) {
-      updateAngle(uid, nodeData[uid].angle);
+      updateAngle(uid, nodeData.angles[uid]);
       meshUids.splice(uidIndex, 1);
     } else {
       addNode(uid, {
-        color: nodeData[uid].color
+        color: '#' + c() + c() + c()
       });
-      updateAngle(uid, nodeData[uid].angle);
+      updateAngle(uid, nodeData.angles[uid]);
     }
     newMeshUids.push(uid);
   }
@@ -36,8 +37,12 @@ socket.on('fuck you pidor', function (nodeData) {
   }
 
   meshUids = newMeshUids;
-  countAngleAverage();
+  // countAngleAverage();
 });
+
+function c() {
+  return Math.floor(50 + Math.random() * 150).toString(16)
+}
 
 function updateAngle(uid, angle) {
   getMeshNode(uid).node.state.angular.pos = angle;
