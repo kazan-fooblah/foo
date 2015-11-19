@@ -8,9 +8,40 @@ window.rendererWidth = 1280;
 window.rendererHeight = window.innerHeight;
 window.meshNodeRadius = 25;
 window.meshNodes = [];
+window.meshUids = [];
 window.meshAnimationStack = [];
+window.averageAngle = 0;
 
 // helpers
+
+var socket = io.connect('http://localhost:3000');
+socket.on('fuck you pidor', function (nodeData) {
+  var newMeshUids = [];
+  for (var uid in nodeData) {
+    var uidIndex = meshUids.indexOf(uid);
+    if (uidIndex != -1) {
+      updateAngle(uid, nodeData[uid].angle);
+      meshUids.splice(uidIndex, 1);
+    } else {
+      addNode(uid, {
+        color: nodeData[uid].color
+      });
+      updateAngle(uid, nodeData[uid].angle);
+    }
+    newMeshUids.push(uid);
+  }
+
+  for (var deadUid of meshUids) {
+    removeNode(deadUid);
+  }
+
+  meshUids = newMeshUids;
+  countAngleAverage();
+});
+
+function updateAngle(uid, angle) {
+  getMeshNode(uid).node.state.angular.pos = angle;
+}
 
 function getMeshNode(uid) {
   var i = 0;
@@ -34,12 +65,12 @@ function moveWithAnimation(uid, x) {
   });
 }
 
-function rockerAngleAverage() {
+function countAngleAverage() {
   var sum = 0;
   for (var meshNode of meshNodes) {
     sum += meshNode.node.state.angular.pos;
   }
-  return sum / meshNodes.length;
+  averageAngle = meshNodes.length > 0 ? (sum / meshNodes.length) : 0;
 }
 
 function moveNodesLeft(fromIndex) {
@@ -61,11 +92,7 @@ function removeNode (uid) {
   }
 }
 
-function addNode(uid) {
-  function c() {
-    return Math.floor(50 + Math.random() * 150).toString(16)
-  }
-
+function addNode(uid, options) {
   var index = meshNodes.length;
 
   var node = Physics.body('circle', {
@@ -75,7 +102,7 @@ function addNode(uid) {
     mass: 1,
     treatment: 'static',
     styles: {
-      fillStyle: '#' + c() + c() + c(),
+      fillStyle: options.color || '#fff',
       angleIndicator: 'black'
     }
   });
@@ -85,12 +112,6 @@ function addNode(uid) {
     uid: uid,
     node: node
   });
-}
-
-function addMeshNodes(count) {
-  for (var i = 0; i < count; i++) {
-    addNode(i.toString());
-  }
 }
 
 // main scene
@@ -107,7 +128,7 @@ Physics(function (world) {
 
   world.on('step', function () {
     world.render();
-    rocker.state.angular.pos += (rockerAngleAverage() - rocker.state.angular.pos) / 2;
+    rocker.state.angular.pos += (averageAngle - rocker.state.angular.pos) / 2;
 
     var animationIndex = 0;
     for (var animationData of meshAnimationStack) {
@@ -183,5 +204,4 @@ Physics(function (world) {
     Physics.behavior('sweep-prune'),
     edgeBounce
   ]);
-  addMeshNodes(10);
 });
