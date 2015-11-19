@@ -27,6 +27,8 @@ from kivy.properties import NumericProperty
 import math
 from kivy.animation import Animation
 
+import android_node
+
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 View = autoclass('android.view.View')
 Params = autoclass('android.view.WindowManager$LayoutParams')
@@ -146,7 +148,7 @@ class MainApp(App):
 
         print "fooblah main build handler.init"
 
-        h = env.Handler(node_main)
+        h = env.Handler(android_node.angle_main)
 
         print "fooblah main build connection"
 
