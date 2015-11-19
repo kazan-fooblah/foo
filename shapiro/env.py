@@ -3,6 +3,8 @@
 from crdt.base import StateCRDT
 from time import time
 import uuid
+from threading import RLock, Thread
+from copy import deepcopy
 
 
 def to_typestring(element):
@@ -10,6 +12,8 @@ def to_typestring(element):
         return 'lwwdict'
     elif isinstance(element, GCounter):
         return 'gcounter'
+    elif isinstance(element, LWWValue):
+        return 'lwwvalue'
     else:
         raise StandardError("SHP: TOS: Hey, I do not know what to do with element of class " + str(element.__class__))
 
@@ -19,6 +23,8 @@ def from_typestring(typestring):
         return GCounter
     elif typestring == 'lwwdict':
         return LWWDict
+    elif typestring == 'lwwvalue':
+        return LWWValue
     else:
         raise StandardError("SHP: SOT: Hey, I do not know what to do with typestring " + str(typestring))
 
@@ -75,9 +81,6 @@ class GCounter(StateCRDT):
     # GCounter API
     #
     def increment(self):
-        print("++++++++++++++++++++++++++++++")
-        print(self.client_id)
-        print(self._payload)
         c = self._payload.get(self.client_id, 0)
         self._payload[self.client_id] = c + 1
 
@@ -98,7 +101,7 @@ class LWWValue(StateCRDT):
     @classmethod
     def merge(cls, X, Y):
         new = cls()
-        if X.A > Y.A:
+        if X.A >= Y.A:
             new.A = X.A
             new.v = X.v
         else:
@@ -128,28 +131,49 @@ class LWWDict(StateCRDT):
         super(StateCRDT, self).__init__()
         self.A = {}
         self.R = {}
-        self.pairs = {} # Contains CRTD as well
+        self.pairs = {}  # Contains CRTD as well
+        self.busy = RLock()
 
     @property
     def value(self):
-        result = {}
-        for (k, ts) in self.A.iteritems():
-            if ts >= self.R.get(k, 0):
-                result[k] = self.pairs[k]
-        return result
+        with self.busy:
+            #print("*************value")
+            result = {}
+            for (k, ts) in self.A.iteritems():
+                if ts >= self.R.get(k, 0):
+                    result[k] = self.pairs[k]
+            return result
 
     def add(self, key, value):
+        with self.busy:
+            self.__add(key, value)
+
+    def __add(self, key, value):
+        #print("*************__add")
         self.A[key] = (time(),)
         self.pairs[key] = value
 
     def discard(self, key):
+        with self.busy:
+            self.__discard(key)
+
+    def __discard(self, key):
+        #print("*************__discard")
         if key in self.A:
             self.R[key] = (time(),)
             del self.pairs[key]
 
     def update(self, key, new_value):
-        self.discard(key)
-        self.add(key, new_value)
+        with self.busy:
+            self.__discard(key)
+            self.__add(key, new_value)
+
+    def clone(self):
+        """Create a copy of this CRDT instance"""
+        with self.busy:
+            #print("*************vclone")
+            c = self.__class__.from_payload(deepcopy(self.payload))
+            return c
 
     def keys(self):
         return self.value.keys()
@@ -161,44 +185,39 @@ class LWWDict(StateCRDT):
         return self.value[key]
 
     def get_payload(self):
-        pairs = {}
-        print("****************************")
-        for k, v in self.pairs.iteritems():
-            print("For " + str(k) + " got " + str(v.payload))
-            pairs[k] = v.payload
-        types = {k: to_typestring(v) for k, v in self.pairs.iteritems()}
-        return {
-            'A': self.A,
-            'R': self.R,
-            'pairs': pairs,
-            'types': types
-        }
+        with self.busy:
+            pairs = {}
+            for k, v in self.pairs.iteritems():
+                pairs[k] = v.payload
+            types = {k: to_typestring(v) for k, v in self.pairs.iteritems()}
+            return {
+                'A': self.A,
+                'R': self.R,
+                'pairs': pairs,
+                'types': types
+            }
 
     def set_payload(self, payload):
-        self.A = payload['A']
-        self.R = payload['R']
-        types = payload['types']
-        self.pairs = {}
-        for k, v in payload['pairs'].iteritems():
-            self.pairs[k] = from_typestring(types[k])().from_payload(v)
+        with self.busy:
+            self.A = payload['A']
+            self.R = payload['R']
+            types = payload['types']
+            self.pairs = {}
+            for k, v in payload['pairs'].iteritems():
+                self.pairs[k] = from_typestring(types[k])().from_payload(v)
 
     payload = property(get_payload, set_payload)
 
     @classmethod
     def merge(cls, X, Y):
         additions, pairs, types = cls._merge_additions(X, Y)
-        print('LWW: ADD: ' + str(additions))
-        print('LWW: PAR: ' + str(pairs))
-        print('LWW: TYP: ' + str(types))
         removals = cls._merge_removals(X, Y)
-        print('LWW: REM: ' + str(removals))
         payload = {
             'A': additions,
             'R': removals,
             'pairs': {k: v.payload for k, v in pairs.iteritems()},
             'types': types
         }
-        print("LWW: MRG: " + str(payload))
         return cls.from_payload(payload)
 
     def compare(self, other):
@@ -218,23 +237,19 @@ class LWWDict(StateCRDT):
         pairs = {}
         types = {}
         keys = set(X.A) | set(Y.A)
-        print("MMMMMMMMMMMMMMMM")
         for key in keys:
             x_timestamp = X.A.get(key, 0)
             y_timestamp = Y.A.get(key, 0)
             if x_timestamp >= y_timestamp:
                 value = X.pairs[key]
-                print("X value: " + str(value) + " of class " + str(value.__class__))
                 pairs[key] = value
                 types[key] = to_typestring(value)
                 additions[key] = x_timestamp
             else:
                 value = Y.pairs[key]
-                print("Y value: " + str(value) + " of class " + str(value.__class__))
                 pairs[key] = value
                 types[key] = to_typestring(value)
                 additions[key] = y_timestamp
-        print("LWW: MRG: After merge: " + str(additions) + ", " + str(pairs) + ", " + str(types))
         return additions, pairs, types
 
     @classmethod
@@ -280,6 +295,22 @@ def fake_broadcast(x):
     print("ENV: FAK: Broadcasting: " + str(x))
 
 
+def handle_interests(interests, my_variables, locals, globals):
+    interest_keys = set(interests.keys()) & set(my_variables.keys())
+    for interest in interest_keys:
+        sink_name, local_global_sink, handler, name = interests.get(interest)
+        if hasattr(handler, '__call__'):
+            sink_value = None
+            if local_global_sink == 'local':
+                sink_value = locals[sink_name]
+            else:
+                print(globals.payload)
+                print(globals.value)
+                sink_value = globals.value[sink_name]
+            print("^^^^^ Calling fold " + str(name) + " from " + str(interest) + " to sink " + str(sink_name))
+            handler(my_variables[interest], sink_value)
+
+
 class Env(object):
     def __init__(self, broadcast=fake_broadcast):
         self.globals = LWWDict()
@@ -302,9 +333,11 @@ class Env(object):
 
     def loc(self, dt, name):
         self.locals[name] = dt
+        Thread(target=handle_interests, args=[self.local_interesting, self.locals, self.locals, self.globals]).start()
+        #handle_interests(self.local_interesting, self.locals, self.locals, self.globals)
         return Local(name, self)
 
-    def fold(self, source, sink, func):
+    def fold(self, source, sink, func, name=None):
         print("ENV: Make fold of " + str(source.name) + " into " + str(sink.name))
 
         def and_set_local(value, sink_name):
@@ -320,14 +353,14 @@ class Env(object):
 
         if isinstance(source, Local):
             if isinstance(sink, Local):
-                self.local_interesting[source.name] = lambda src: and_set_local(func(src), sink.name)
+                self.local_interesting[source.name] = (sink.name, 'local', lambda src, snk: and_set_local(func(src, snk), sink.name), name)
             elif isinstance(sink, Global):
-                self.local_interesting[source.name] = lambda src: and_set_and_broadcast(func(src), sink.name)
+                self.local_interesting[source.name] = (sink.name, 'global', lambda src, snk: and_set_and_broadcast(func(src, snk), sink.name), name)
         elif isinstance(source, Global):
             if isinstance(sink, Local):
-                self.global_interesting[source.name] = lambda src: and_set_local(func(src), sink.name)
+                self.global_interesting[source.name] = (sink.name, 'local', lambda src, snk: and_set_local(func(src, snk), sink.name), name)
             elif isinstance(sink, Global):
-                self.global_interesting[source.name] = lambda src: and_set_and_broadcast(func(src), sink.name)
+                self.global_interesting[source.name] = (sink.name, 'global', lambda src, snk: and_set_and_broadcast(func(src, snk), sink.name), name)
 
     def clone(self):
         new = self.__class__()
@@ -354,13 +387,7 @@ class Handler(object):
     def __call__(self, global_state_payload):
         if not self.__initiated:
             raise StandardError("Hey, you must call attached after you attached me!")
-        print("HAN: Got new global state payload: " + str(global_state_payload))
         new_global = LWWDict.from_payload(global_state_payload)
-        current_global = self.env.globals
-        next_global = LWWDict.merge(current_global, new_global)
-        self.env.globals = next_global
-        interests = set(self.env.global_interesting.keys()) & set(self.env.globals.keys())
-        for interest in interests:
-            handler = self.env.global_interesting.get(interest)
-            if hasattr(handler, '__call__'):
-                handler(self.env.globals[interest])
+        self.env.globals = LWWDict.merge(self.env.globals, new_global)
+        Thread(target=handle_interests, args=[self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals]).start()
+        #handle_interests(self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals)
