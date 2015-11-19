@@ -52,8 +52,8 @@ def angle_main(e):
 
 
 def node_main(e):
-    global_presence = e.glob(env.LWWDict(), "global_presence")
-    one = e.loc(env.LWWValue(), 'one')
+    global_presence = e.glob(env.LWWDict(), u"global_presence")
+    one = e.loc(env.LWWValue(), u'one')
 
     def set_presence(prev, sink):
         next_global_presence = prev.clone()
@@ -71,7 +71,7 @@ def node_main(e):
 
     next_one = one.clone()
     next_one.set(1)
-    e.loc(next_one, 'one')
+    e.loc(next_one, u'one')
 
 
 def real():
