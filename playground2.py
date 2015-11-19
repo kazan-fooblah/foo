@@ -43,7 +43,7 @@ def angle_main(e):
 
     def calculate_average_angle(all_angles, snk):
         count = len(all_angles.value)
-        s = sum(all_angles.value.itervalues())
+        s = sum(all_angles.values().itervalues())
         avg_angle = snk.clone()
         avg_angle.set(float(s) / float(count))
         return avg_angle
