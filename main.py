@@ -30,6 +30,7 @@ class MainApp(App):
 
         self.connection.configure_with(delegate=ui)
         self.connection.start()
+        self.connection.send("little sparrow")
 
         acc_delegate = AccelerometerDelegate()
         acc_delegate.configure_with(connection=self.connection)
