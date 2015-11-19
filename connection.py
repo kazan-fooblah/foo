@@ -16,7 +16,7 @@ class Connection:
 
     def __init__(self):
         self._delegate = None
-        self._uuid = uuid.uuid4()
+        # self._uuid = uuid.uuid4()
 
     def configure_with(self, delegate):
         self._delegate = delegate
@@ -33,10 +33,10 @@ class Connection:
         self.start_second_thread()
 
     def send(self, message):
-        m = {
-            "uuid": self._uuid,
-            "payload": message
-        }
+        # m = {
+        #     "uuid": self._uuid,
+        #     "payload": message
+        # }
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
         sock.sendto(m, (MCAST_GRP, MCAST_PORT))
