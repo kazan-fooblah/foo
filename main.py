@@ -25,6 +25,7 @@ from kivy.graphics import Color, Line, Canvas, Rectangle
 from kivy.properties import NumericProperty
 
 import math
+from kivy.animation import Animation
 
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 View = autoclass('android.view.View')
@@ -104,7 +105,8 @@ class UI(FloatLayout):
         # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        self.angle = float(txt) / math.pi * 180 + 90
+        angle = float(txt) / math.pi * 180 + 90
+        Animation(angle=angle).start(self)
         # pass
         # print "UI.update %s" % txt
         # self.lblAcce.text = txt
