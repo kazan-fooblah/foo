@@ -63,7 +63,7 @@ fullscreen = 1
 android.permissions = INTERNET
 
 # (int) Android API to use
-#android.api = 19
+android.api = 17
 
 # (int) Minimum API required
 #android.minapi = 9

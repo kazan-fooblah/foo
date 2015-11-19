@@ -8,14 +8,20 @@ from connection import Connection
 from accelerometer import Accelerometer
 from accelerometer_delegate import AccelerometerDelegate
 
-from jnius import autoclass
+from shapiro import env
+import uuid
+
+from kivy.properties import BooleanProperty
+from kivy.utils import platform
+
+import android
+from jnius import autoclass, cast
+from android.runnable import run_on_ui_thread
+
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 View = autoclass('android.view.View')
 Params = autoclass('android.view.WindowManager$LayoutParams')
 
-from android.runnable import run_on_ui_thread
-from shapiro import env
-import uuid
 
 U = str(uuid.uuid4())
 
@@ -84,34 +90,47 @@ class UI(FloatLayout):
 class MainApp(App):
 
     connection = Connection()
-    acc = Accelerometer()
-    another_acc = Accelerometer()
+    # acc = Accelerometer()
+    # another_acc = Accelerometer()
 
     def on_stop(self):
         self.connection.stop.set()
-        self.acc.stop.set()
-        self.another_acc.stop.set()
+        # self.acc.stop.set()
+        # self.another_acc.stop.set()
 
     def build(self):
+        self.bind(on_start=self.post_build_init)
+
+        print "fooblah main build start"
         ui = UI()
 
+        print "fooblah main build setflag"
+
         self.android_setflag()
+
+        # return ui
 
         # self.another_acc.configure_with(delegate=ui)
         # self.another_acc.start()
 
+        print "fooblah main build "
+
         uiContainer.configure_with(ui)
+
+        print "fooblah main build handler.init"
 
         h = env.Handler(node_main)
 
-        self.connection.configure_with(func=h)
+        print "fooblah main build connection"
+
+        self.connection.configure_with(delegate=None, func=h)
         self.connection.start()
 
-        acc_delegate = AccelerometerDelegate()
-        acc_delegate.configure_with(connection=self.connection)
-
-        self.acc.configure_with(delegate=acc_delegate)
-        self.acc.start()
+        # acc_delegate = AccelerometerDelegate()
+        # acc_delegate.configure_with(connection=self.connection)
+        #
+        # self.acc.configure_with(delegate=acc_delegate)
+        # self.acc.start()
 
         return ui
 
@@ -122,12 +141,16 @@ class MainApp(App):
     def setflag(self, *args):
         self.android_setflag()
 
-    @run_on_ui_thread
-    def android_clearflag(self):
-        PythonActivity.mActivity.getWindow().clearFlags(Params.FLAG_KEEP_SCREEN_ON)
+    def post_build_init(self, *args):
+        android.map_key(android.KEYCODE_BACK, 1000)
+        win = self._app_window
+        win.bind(on_keyboard=self._key_handler)
 
-    def clearflag(self, *args):
-        self.android_clearflag()
+    def _key_handler(self, *args):
+        key = args[1]
+        if key in (1000, 27):
+            self.stop()
+            return True
 
 
 if __name__ == '__main__':
