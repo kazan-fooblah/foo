@@ -89,15 +89,21 @@ class UI(FloatLayout):
 
     def __init__(self, **kwargs):
 
+        self.canvas = Canvas()
+        with self.canvas:
+            Color(1., 0, 0)
+            Rectangle(pos=(10, 10), size=(500, 500))
+
         super(UI, self).__init__(**kwargs)
 
-        print "UI.__init__"
-        self.lblAcce = Label(text='oooooooooooooooooooooooooooo')
-        self.add_widget(self.lblAcce)
+        # print "UI.__init__"
+        # self.lblAcce = Label(text='oooooooooooooooooooooooooooo')
+        # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        print "UI.update %s" % txt
-        self.lblAcce.text = txt
+        pass
+        # print "UI.update %s" % txt
+        # self.lblAcce.text = txt
 
 # class UI(Widget):
 #     pass
