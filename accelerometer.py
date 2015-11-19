@@ -8,7 +8,7 @@ FREQUENCY = 1.0 / 24
 
 class Accelerometer:
 
-    stop = None
+    stop = threading.Event()
 
     def __init__(self):
         self._delegate = None
