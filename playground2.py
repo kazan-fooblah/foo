@@ -26,11 +26,11 @@ def post(data):
 
 
 def angle_main(e):
-    angles = e.glob(env.LWWDict(), 'angles')
+    angles = e.glob(env.LWWDict(), u'angles')
     initial_average = env.LWWValue()
     initial_average.set(0)
-    average_angle = e.glob(initial_average, 'average_angle')
-    current_angle = e.loc(env.LWWValue(), 'current_angle')
+    average_angle = e.glob(initial_average, u'average_angle')
+    current_angle = e.loc(env.LWWValue(), u'current_angle')
 
     def add_current_to_angles(current, all):
         next_all = all.clone()
@@ -76,7 +76,7 @@ def node_main(e):
 
 def real():
     connection = Connection()
-    h = env.Handler(node_main)
+    h = env.Handler(angle_main)
     connection.configure_with(delegate=None, func=h)
     connection.start()
 
