@@ -239,23 +239,26 @@ class LWWDict(StateCRDT):
         keys = set(X.A.keys()) | set(Y.A.keys())
         print("sdfsdfsdfasdfadsfsdaf")
         print(keys)
-        for key in keys:
-            klass = X.pairs[key].__class__
-            x_value = X.pairs.get(key, None)
-            y_value = Y.pairs.get(key, None)
-            pairs[key] = None
-            x_timestamp = X.A.get(key, 0)
-            y_timestamp = Y.A.get(key, 0)
+        for k in keys:
+            klass = X.pairs[k].__class__
+            x_value = X.pairs.get(k, None)
+            y_value = Y.pairs.get(k, None)
+            print("xvalue: " + str(x_value))
+            print("yvalue: " + str(y_value))
+            pairs[k] = None
+            x_timestamp = X.A.get(k, 0)
+            y_timestamp = Y.A.get(k, 0)
             if x_value and y_value:
-                pairs[key] = klass.merge(x_value, y_value)
-                additions[key] = time()
+                pairs[k] = klass.merge(x_value, y_value)
+                additions[k] = time()
             elif x_value and y_value is None:
-                pairs[key] = x_value
-                additions[key] = x_timestamp
+                pairs[k] = x_value
+                additions[k] = x_timestamp
             elif x_value is None and y_value:
-                pairs[key] = y_value
-                additions[key] = y_timestamp
-            types[key] = to_typestring(pairs[key])
+                pairs[k] = y_value
+                additions[k] = y_timestamp
+
+            types[k] = to_typestring(pairs[k])
         print(additions)
         print(pairs)
         print(types)
