@@ -35,7 +35,7 @@ class Connection:
     def send(self, message):
         try:
             m = {
-                "uuid": self._uuid,
+                "uuid": str(self._uuid),
                 "payload": message
             }
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
