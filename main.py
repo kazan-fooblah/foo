@@ -24,6 +24,8 @@ from android.runnable import run_on_ui_thread
 from kivy.graphics import Color, Line, Canvas, Rectangle
 from kivy.properties import NumericProperty
 
+import math
+
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 View = autoclass('android.view.View')
 Params = autoclass('android.view.WindowManager$LayoutParams')
@@ -93,7 +95,7 @@ class UI(FloatLayout):
         self.canvas = Canvas()
         with self.canvas:
             Color(1., 0, 0)
-            Rectangle(pos=(10, 10), size=(500, 500))
+            # Rectangle(pos=(10, 10), size=(500, 500))
 
         super(UI, self).__init__(**kwargs)
 
@@ -102,7 +104,7 @@ class UI(FloatLayout):
         # self.add_widget(self.lblAcce)
 
     def update(self, txt):
-        self.angle = float(txt)
+        self.angle = float(txt) / math.pi * 180
         # pass
         # print "UI.update %s" % txt
         # self.lblAcce.text = txt
