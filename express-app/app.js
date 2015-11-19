@@ -26,35 +26,35 @@ var io = require('socket.io')(app);
 //
 // client.bind(PORT, HOST);
 
-var nodes = function() {
-  function c() {
-    return Math.floor(50 + Math.random() * 150).toString(16)
-  }
-
-  var result = {
-    'Kostya': {
-      angle: Math.random() * 2 - 1,
-      color: '#' + c() + c() + c()
-    },
-    'Sergey': {
-      angle: Math.random() * 2 - 1,
-      color: '#' + c() + c() + c()
-    },
-    'Almir': {
-      angle: Math.random() * 2 - 1,
-      color: '#' + c() + c() + c()
-    }
-  };
-
-  if ((Math.random() * 10) > 3) {
-    result[Math.random().toString()] = {
-      angle: Math.random() * 2 - 1,
-      color: '#' + c() + c() + c()
-    }
-  }
-
-  return result;
-}
+// var nodes = function() {
+//   function c() {
+//     return Math.floor(50 + Math.random() * 150).toString(16)
+//   }
+//
+//   var result = {
+//     'Kostya': {
+//       angle: Math.random() * 2 - 1,
+//       color: '#' + c() + c() + c()
+//     },
+//     'Sergey': {
+//       angle: Math.random() * 2 - 1,
+//       color: '#' + c() + c() + c()
+//     },
+//     'Almir': {
+//       angle: Math.random() * 2 - 1,
+//       color: '#' + c() + c() + c()
+//     }
+//   };
+//
+//   if ((Math.random() * 10) > 3) {
+//     result[Math.random().toString()] = {
+//       angle: Math.random() * 2 - 1,
+//       color: '#' + c() + c() + c()
+//     }
+//   }
+//
+//   return result;
+// }
 
 var socket2 = null;
 
