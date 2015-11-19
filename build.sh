@@ -42,7 +42,7 @@ echo "Open ssh connection"
 ssh -tt -o 'IdentitiesOnly yes' -i $PRIVATE_KEY -p$SSH_PORT "${SSH_USER}@${SSH_HOST}" 'bash -s' <<'ENDSSH'
 
   cd /home/ubuntu/removeme/foo/
-  git pull origin debug
+  git pull origin master
   buildozer -v android debug
 
   exit

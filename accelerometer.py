@@ -1,5 +1,6 @@
 import threading
 import time
+import math
 
 from plyer import accelerometer
 from kivy.clock import Clock, mainthread
@@ -46,5 +47,9 @@ class Accelerometer:
 
     @staticmethod
     def accelerometer_representation():
-        return "X = %.2f Y = %.2f Z = %2.f" % (float(accelerometer.acceleration[0] or 0), float(accelerometer.acceleration[1] or 0), float(accelerometer.acceleration[2] or 0))
+        x = float(accelerometer.acceleration[0] or 0)
+        y = float(accelerometer.acceleration[1] or 0)
+        z = float(accelerometer.acceleration[2] or 0)
+        # return math.arcsin(z / (pow(pow(z, 2) + pow(y, 2) + pow(x, 2)), 0.5))
+        return math.atan(y / x)
 
