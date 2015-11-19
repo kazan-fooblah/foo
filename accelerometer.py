@@ -20,6 +20,8 @@ class Accelerometer:
         try:
             accelerometer.enable()
             # Clock.schedule_interval(self.update, 1.0 / 24)
+            # self._delegate.update("accelerometer.start_second_thread: %s")
+            # raise
             self.start_second_thread()
         except Exception as e:
             self._delegate.update("accelerometer.start: %s" % e)
@@ -31,6 +33,8 @@ class Accelerometer:
     def start_second_thread(self):
         try:
             threading.Thread(target=self.second_thread).start()
+            names = map(lambda x: x.name, threading.enumerate())
+            self._delegate.update("\n".join(names))
         except Exception as e:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
