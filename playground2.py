@@ -5,6 +5,8 @@ import uuid
 import threading
 from connection import Connection
 import httplib, urllib
+import json
+import random
 
 U = unicode(str(uuid.uuid4()))
 UI_HOST = 'localhost'
@@ -13,9 +15,10 @@ UI_ENDPOINT = '/endpoint'
 
 print("I am U: " + U)
 
-def post(data):
+
+def post(dict_data):
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
-    body = '{"foo": "blah"}'
+    body = json.dumps(dict_data)
     conn = httplib.HTTPConnection(UI_HOST, UI_PORT)
     conn.request("POST", UI_ENDPOINT, body, headers)
     response = conn.getresponse()
@@ -36,11 +39,7 @@ def angle_main(e):
         next_all = all.clone()
         next_all.update(U, current)
         return next_all
-    e.fold(current_angle, angles, add_current_to_angles)
-
-    zero_angle = current_angle.q()
-    zero_angle.set(1)
-    e.loc(zero_angle, 'current_angle')
+    e.fold(current_angle, angles, add_current_to_angles, 'ADD_CURRENT_TO_ANGLES')
 
     def calculate_average_angle(all_angles, snk):
         count = len(all_angles.value)
@@ -48,7 +47,11 @@ def angle_main(e):
         avg_angle = snk.clone()
         avg_angle.set(float(s) / float(count))
         return avg_angle
-    e.fold(angles, average_angle, calculate_average_angle)
+    e.fold(angles, average_angle, calculate_average_angle, 'CALCULATE_AVERAGE_ANGLE')
+
+    zero_angle = current_angle.q()
+    zero_angle.set(random.random())
+    e.loc(zero_angle, 'current_angle')
 
 
 def node_main(e):

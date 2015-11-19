@@ -144,6 +144,14 @@ class LWWDict(StateCRDT):
                     result[k] = self.pairs[k]
             return result
 
+    def values(self):
+        with self.busy:
+            result = {}
+            for (k, ts) in self.A.iteritems():
+                if ts >= self.R.get(k, 0):
+                    result[k] = self.pairs[k].value
+            return result
+
     def get(self, name):
         result = {}
         for (k, ts) in self.A.iteritems():
