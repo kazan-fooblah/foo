@@ -36,8 +36,11 @@ class Connection:
         sock.close()
 
     @mainthread
-    def update2(self, txt):
-        self._delegate.update_from_socket(txt)
+    def recieved(self, txt):
+        try:
+            self._delegate.update_from_socket(txt)
+        except Exception as e:
+            self._delegate.update_from_socket("recieved: %s" % e)
 
     def start_second_thread(self):
         try:
@@ -46,9 +49,13 @@ class Connection:
             self._delegate.update_from_socket("start_second_thread: %s" % e)
 
     def second_thread(self):
-        while True:
-            if self.stop.is_set():
-                self.sock.close()
-                return
-            msg = str(self.sock.recv(255))
-            self.update2(msg)
+        try:
+            while True:
+                if self.stop.is_set():
+                    break
+                msg = str(self.sock.recv(255))
+                self.recieved(msg)
+        except Exception as e:
+            self._delegate.update_from_socket("second_thread: %s" % e)
+        finally:
+            self.sock.close()
