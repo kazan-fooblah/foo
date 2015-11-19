@@ -389,5 +389,5 @@ class Handler(object):
             raise StandardError("Hey, you must call attached after you attached me!")
         new_global = LWWDict.from_payload(global_state_payload)
         self.env.globals = LWWDict.merge(self.env.globals, new_global)
-        Thread(target=handle_interests, args=[self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals]).start()
-        #handle_interests(self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals)
+        #Thread(target=handle_interests, args=[self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals]).start()
+        handle_interests(self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals)
