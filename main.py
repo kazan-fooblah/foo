@@ -18,7 +18,7 @@ import android
 from jnius import autoclass, cast
 from android.runnable import run_on_ui_thread
 
-from kivy.graphics import Color, Line, Canvas
+from kivy.graphics import Color, Line, Canvas, Rectangle
 from kivy.properties import NumericProperty
 
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
@@ -85,15 +85,19 @@ class UI(FloatLayout):
     r = NumericProperty(1.0)
 
     def __init__(self, **kwargs):
-        super(UI, self).__init__(**kwargs)
+
         # self.lblAcce = Label(text="")
         # self.add_widget(self.lblAcce)
         self.canvas = Canvas()
         with self.canvas:
-            Color(self.r, 1, 1, 1)
-            self.line = Line(points=[100, 200, 200, 200], width = 2.0, close = True)
-        self.add_widget(self.canvas)
-        self.canvas.draw()
+            Color(1., 1., 0)
+            Rectangle(size=(50, 50))
+            # Color(self.r, 1, 1, 1)
+            # self.line = Line(points=[100, 200, 200, 200], width = 2.0, close = True)
+        # self.add_widget(self.canvas)
+        # self.canvas.draw()
+
+        super(UI, self).__init__(**kwargs)
         
     def update(self, txt):
         pass
