@@ -238,18 +238,34 @@ class LWWDict(StateCRDT):
         types = {}
         keys = set(X.A) | set(Y.A)
         for key in keys:
+            klass = X.pairs[key].__class__
+            x_value = X.pairs.get(key, None)
+            y_value = Y.pairs.get(key, None)
+            pairs[key] = None
             x_timestamp = X.A.get(key, 0)
             y_timestamp = Y.A.get(key, 0)
-            if x_timestamp >= y_timestamp:
-                value = X.pairs[key]
-                pairs[key] = value
-                types[key] = to_typestring(value)
+            if x_value and y_value:
+                pairs[key] = klass.merge(x_value, y_value)
+                additions[key] = time()
+            elif x_value and y_value is None:
+                pairs[key] = x_value
                 additions[key] = x_timestamp
-            else:
-                value = Y.pairs[key]
-                pairs[key] = value
-                types[key] = to_typestring(value)
+            elif x_value is None and y_value:
+                pairs[key] = y_value
                 additions[key] = y_timestamp
+            types[key] = to_typestring(pairs[key])
+
+            #
+            # if x_timestamp >= y_timestamp:
+            #     value = X.pairs[key]
+            #     pairs[key] = value
+            #     types[key] = to_typestring(value)
+            #     additions[key] = x_timestamp
+            # else:
+            #     value = Y.pairs[key]
+            #     pairs[key] = value
+            #     types[key] = to_typestring(value)
+            #     additions[key] = y_timestamp
         return additions, pairs, types
 
     @classmethod
