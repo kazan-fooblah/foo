@@ -12,6 +12,7 @@ def main(e):
     print("APP: Got initial global sum: " + str(global_sum.value))
     e.fold(global_sum, global_sum, inc_sleep)
 
+
 def real():
     e = env.Env()
     h = env.Handler(main, env=e)

@@ -69,9 +69,6 @@ class GCounter(StateCRDT):
         for k in keys:
             value = max(X.payload.get(k, 0), Y.payload.get(k, 0))
             gen[k] = value
-        #gen = ((key, max(X.payload.get(key, 0), Y.payload.get(key, 0)))
-        #       for key in keys)
-
         return cls.from_payload(gen)
 
     #
@@ -88,6 +85,44 @@ class GCounter(StateCRDT):
         return self.value.__cmp__(other.value)
 
 
+class LWWValue(StateCRDT):
+    def __init__(self):
+        super(StateCRDT, self).__init__()
+        self.A = None
+        self.v = None
+
+    def set(self, v):
+        self.A = time()
+        self.v = v
+
+    @classmethod
+    def merge(cls, X, Y):
+        new = cls()
+        if X.A > Y.A:
+            new.A = X.A
+            new.v = X.v
+        else:
+            new.A = Y.A
+            new.v = Y.v
+        return new
+
+    @property
+    def value(self):
+        return self.v
+
+    def get_payload(self):
+        return {
+            'A': self.A,
+            'v': self.v
+        }
+
+    def set_payload(self, payload):
+        self.A = payload['A']
+        self.v = payload['v']
+
+    payload = property(get_payload, set_payload)
+
+
 class LWWDict(StateCRDT):
     def __init__(self):
         super(StateCRDT, self).__init__()
@@ -95,6 +130,7 @@ class LWWDict(StateCRDT):
         self.R = {}
         self.pairs = {} # Contains CRTD as well
 
+    @property
     def value(self):
         result = {}
         for (k, ts) in self.A.iteritems():
@@ -116,13 +152,13 @@ class LWWDict(StateCRDT):
         self.add(key, new_value)
 
     def keys(self):
-        return self.value().keys()
+        return self.value.keys()
 
     def __contains__(self, key):
-        return key in self.value().keys()
+        return key in self.value.keys()
 
     def __getitem__(self, key):
-        return self.value()[key]
+        return self.value[key]
 
     def get_payload(self):
         pairs = {}
