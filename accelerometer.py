@@ -40,7 +40,7 @@ class Accelerometer:
                     break
                 msg = Accelerometer.accelerometer_representation()
                 self.update(msg)
-                time.sleep(FREQUENCY)
+                time.sleep(1.0 / 24)
         except Exception as e:
             self.update("accelerometer.second_thread: %s" % e)
 
