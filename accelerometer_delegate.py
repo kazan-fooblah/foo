@@ -11,5 +11,4 @@ class AccelerometerDelegate:
     def update(self, msg):
         v = env.LWWValue()
         v.set(float(msg))
-        self._handler.loc(v, u'current_angle')
-
+        self._handler.env.loc(v, u'current_angle')
