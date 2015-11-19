@@ -10,6 +10,7 @@ import json
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5670
+SEND_LENGTH = 200
 
 class Connection:
 
@@ -43,8 +44,8 @@ class Connection:
             string_message = json.dumps(dumpable)
             print("„„„„„„„ Sending: " + string_message)
             self.send(string_message)
-        except:
-            print "connection.send_dumpable: not dumpable"
+        except Exception as e:
+            print "connection.send_dumpable: not dumpable: " + str(e)
 
     def send(self, message):
         try:
@@ -57,9 +58,9 @@ class Connection:
             sock.sendto(json.dumps(m), (MCAST_GRP, MCAST_PORT))
             sock.close()
         except Exception as e:
-            self._delegate.update("connection.send: %s" % e)
+            if self._delegate:
+                self._delegate.update("connection.send: %s" % e)
 
-    # @mainthread
     def recieved(self, txt):
         try:
             if self._delegate is not None:

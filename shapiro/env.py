@@ -327,6 +327,7 @@ class Env(object):
             print("ENV: GLB: Really new value " + str(value) + " for " + name)
             self.globals.update(name, new_value)
         else:
+            print("ENV: GLB: Create global variable " + str(name))
             self.globals.add(name, dt)
         # Publish
         return Global(name, self)
@@ -373,13 +374,14 @@ class Env(object):
 
 
 class Handler(object):
-    def __init__(self, func, broadcast=fake_broadcast, env=Env()):
+    def __init__(self, func, env=Env()):
         self.env = env
-        self.broadcast = broadcast
+        self.broadcast = None
         self.func = func
         self.__initiated = False
 
-    def attached(self):
+    def attach(self, broadcast):
+        self.env.broadcast = broadcast
         self.func(self.env)
         print("HAN: Just been attached")
         self.__initiated = True
