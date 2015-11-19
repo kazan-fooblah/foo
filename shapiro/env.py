@@ -388,7 +388,7 @@ class Env(object):
             return value
 
         def and_set_and_broadcast(value, sink_name):
-            if self.globals[sink_name].value.compare(value):
+            if self.globals[sink_name].value == value.value:
                 pass
             else:
                 self.globals.update(sink_name, value)
