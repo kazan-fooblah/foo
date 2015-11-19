@@ -39,6 +39,7 @@ class Accelerometer:
             self._delegate.update("accelerometer.start_second_thread: %s" % e)
 
     def second_thread_lol(self):
+        raise Exception()
         try:
             while True:
                 if self.stop.is_set():
