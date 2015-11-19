@@ -18,7 +18,6 @@ def acc(e):
     e.fold(local_angle, angles, update_my_angle, 'update_my_angle')
 
     def display(source, sink):
-        print('++++++++++++++++++')
         return sink
     e.fold(angles, angles, display)
 
@@ -50,7 +49,6 @@ def main(e):
 def real():
     e = env.Env()
     h = env.Handler(main, env=e)
-    h.attached()
     print("MAN: " + str(e.globals.payload))
     h(e.globals.payload)
     next_e = e.clone()

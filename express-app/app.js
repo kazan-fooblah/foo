@@ -56,10 +56,13 @@ var nodes = function() {
   return result;
 }
 
+var socket2 = null;
+
 io.on('connection', function (socket) {
-  setInterval(function () {
-    socket.emit('fuck you pidor', nodes());
-  }, 1000);
+  socket2 = socket;
+  //setInterval(function () {
+  //  socket.emit('fuck you pidor', nodes());
+  //}, 1000);
 });
 
 app.configure(function(){
@@ -76,6 +79,14 @@ app.configure('development', function(){
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+});
+
+var router = express.Router();
+
+router.post("/endpoint", function (req, res) {
+  res.status(200).send({status: 200});
+  console.log(req.body);
+  if (socket2 != null) socket2.emit('fuck you pidor', req.body);
 });
 
 app.listen(3000, function(){
