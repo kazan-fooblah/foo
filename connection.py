@@ -41,6 +41,8 @@ class Connection:
 
     def send_dumpable(self, dumpable):
         try:
+            print "~~~~~~~~~~~~~~~~"
+            print dumpable
             string_message = json.dumps(dumpable)
             print("„„„„„„„ Sending: " + string_message)
             self.send(string_message)
