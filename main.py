@@ -22,18 +22,18 @@ class MainApp(App):
 
     connection = Connection()
     acc = Accelerometer()
-    # another_acc = Accelerometer()
+    another_acc = Accelerometer()
 
     def on_stop(self):
         self.connection.stop.set()
         self.acc.stop.set()
-        # self.another_acc.stop.set()
+        self.another_acc.stop.set()
 
     def build(self):
         ui = UI()
 
-        # self.another_acc.configure_with(delegate=ui)
-        # self.another_acc.start()
+        self.another_acc.configure_with(delegate=ui)
+        self.another_acc.start()
 
         self.connection.configure_with(delegate=ui)
         self.connection.start()

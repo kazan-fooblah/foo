@@ -61,12 +61,12 @@ class Connection:
                 if self.stop.is_set():
                     break
                 msg = str(self.sock.recv(255))
-                try:
-                    message = json.loads(msg)
-                    if "uuid" in message["uuid"] and message["uuid"] != str(self._uuid):
-                        self.recieved(message["payload"])
-                except:
-                    pass
+                # try:
+                #     message = json.loads(msg)
+                #     if "uuid" in message["uuid"] and message["uuid"] != str(self._uuid):
+                self.recieved(message["payload"])
+                # except:
+                #     pass
         except Exception as e:
             self._delegate.update("connection.second_thread: %s" % e)
         finally:
