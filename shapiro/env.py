@@ -388,10 +388,13 @@ class Env(object):
             return value
 
         def and_set_and_broadcast(value, sink_name):
-            self.globals.update(sink_name, value)
-            print("New value for global " + str(sink_name) + ": " + str(value) + ", " + str(value.__class__))
-            self.broadcast(self.globals.payload)
-            return value
+            if self.globals[sink_name].value.compare(value):
+                pass
+            else:
+                self.globals.update(sink_name, value)
+                print("New value for global " + str(sink_name) + ": " + str(value) + ", " + str(value.__class__))
+                self.broadcast(self.globals.payload)
+                return value
 
         if isinstance(source, Local):
             if isinstance(sink, Local):
