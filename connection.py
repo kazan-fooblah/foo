@@ -4,7 +4,7 @@ import threading
 import uuid
 import json
 
-from kivy.clock import Clock, mainthread
+# from kivy.clock import Clock, mainthread
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5670
@@ -32,7 +32,7 @@ class Connection:
 
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-        h.attached()
+        self._callable.attached()
 
         self.start_second_thread()
 
@@ -49,7 +49,7 @@ class Connection:
         except Exception as e:
             self._delegate.update("connection.send: %s" % e)
 
-    @mainthread
+    # @mainthread
     def recieved(self, txt):
         try:
             if self._delegate is not None:

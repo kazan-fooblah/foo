@@ -19,13 +19,32 @@ import uuid
 
 U = str(uuid.uuid4())
 
+
+class UIContainer:
+
+    def __init__(self):
+        self._ui = None
+
+    def configure_with(self, ui):
+        self._ui = ui
+
+    def draw(self, txt):
+        if self._ui is not None:
+            self._ui.update(txt)
+
+
+uiContainer = UIContainer()
+
 def node_main(e):
     global_presence = e.glob(env.LWWDict(), "global_presence")
+
     def set_presence(prev, sink):
         next_global_presence = prev.clone()
         one = env.LWWValue()
         one.set(1)
         next_global_presence.update(U, one)
+        # UI < next_global_presence.keys()
+        uiContainer.draw(next_global_presence.keys())
         return next_global_presence
     e.fold(global_presence, global_presence, set_presence)
 
@@ -57,8 +76,10 @@ class MainApp(App):
 
         h = env.Handler(node_main)
 
-        self.another_acc.configure_with(delegate=ui)
-        self.another_acc.start()
+        # self.another_acc.configure_with(delegate=ui)
+        # self.another_acc.start()
+
+        uiContainer.configure_with(ui)
 
         self.connection.configure_with(func=h)
         self.connection.start()
