@@ -390,6 +390,8 @@ class Handler(object):
         if not self.__initiated:
             raise StandardError("Hey, you must call attached after you attached me!")
         new_global = LWWDict.from_payload(global_state_payload)
+        print("****** Got something fresh: " + str(new_global.value))
+        print("****** Got something fresh against: " + str(self.env.globals.value))
         self.env.globals = LWWDict.merge(self.env.globals, new_global)
         #Thread(target=handle_interests, args=[self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals]).start()
         handle_interests(self.env.global_interesting, self.env.globals, self.env.locals, self.env.globals)
