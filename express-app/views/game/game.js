@@ -16,7 +16,7 @@ window.averageAngle = 0;
 
 var socket = io.connect('http://localhost:3000');
 socket.on('fuck you pidor', function (nodeData) {
-  averageAngle = nodeData.average_angle || 0
+  averageAngle = nodeData.average_angle/180*Math.PI || 0
   var newMeshUids = [];
   for (var uid in nodeData.angles) {
     var uidIndex = meshUids.indexOf(uid);
